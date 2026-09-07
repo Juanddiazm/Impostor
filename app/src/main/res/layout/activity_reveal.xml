@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <!-- Pass screen -->
+    <LinearLayout
+        android:id="@+id/passPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/txtProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/muted"
+            android:textSize="14sp"
+            android:letterSpacing="0.1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pass_phone"
+            android:textColor="@color/muted"
+            android:textSize="18sp"
+            android:layout_marginTop="30dp" />
+
+        <TextView
+            android:id="@+id/txtPlayerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Title"
+            android:textSize="38sp"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="40dp" />
+
+        <Button
+            android:id="@+id/btnReveal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/reveal_role"
+            style="@style/ButtonPrimary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Asegúrate de que nadie más mire la pantalla"
+            android:textColor="@color/muted"
+            android:textSize="13sp"
+            android:layout_marginTop="14dp" />
+    </LinearLayout>
+
+    <!-- Role card -->
+    <LinearLayout
+        android:id="@+id/rolePanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/roleCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="28dp"
+            android:background="@drawable/bg_card_civil">
+
+            <TextView
+                android:id="@+id/txtRoleTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/muted"
+                android:textSize="16sp"
+                android:letterSpacing="0.1" />
+
+            <TextView
+                android:id="@+id/txtWord"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Title"
+                android:textSize="34sp"
+                android:gravity="center"
+                android:layout_marginTop="12dp" />
+
+            <TextView
+                android:id="@+id/txtCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:textSize="13sp"
+                android:layout_marginTop="14dp" />
+
+            <TextView
+                android:id="@+id/txtRoleDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/muted"
+                android:textSize="14sp"
+                android:layout_marginTop="20dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnHide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/hide_and_pass"
+            style="@style/ButtonPrimary" />
+    </LinearLayout>
+</FrameLayout>

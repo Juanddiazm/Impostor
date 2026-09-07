@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#0B1020</color>
+    <color name="surface">#171D33</color>
+    <color name="surface_light">#222A45</color>
+    <color name="primary">#FF4D6D</color>
+    <color name="primary_dark">#C9184A</color>
+    <color name="secondary">#4CC9F0</color>
+    <color name="good">#2ECC71</color>
+    <color name="warn">#F9C74F</color>
+    <color name="text">#F5F5F7</color>
+    <color name="muted">#9AA3B5</color>
+    <color name="ic_bg">#0B1020</color>
+</resources>

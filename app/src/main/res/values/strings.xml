@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Impostor</string>
+    <string name="tagline">Todos conocen la palabra… menos uno</string>
+    <string name="play">Jugar</string>
+    <string name="words">Palabras</string>
+    <string name="how_to_play">Cómo jugar</string>
+    <string name="settings_title">Configurar partida</string>
+    <string name="players">Jugadores</string>
+    <string name="impostors">Impostores</string>
+    <string name="categories">Categorías</string>
+    <string name="choose_categories">Elegir categorías</string>
+    <string name="hint_for_impostor">El impostor recibe la categoría como pista</string>
+    <string name="round_time">Tiempo por ronda</string>
+    <string name="no_limit">Sin límite</string>
+    <string name="start_game">Empezar partida</string>
+    <string name="pass_phone">Pasa el teléfono a</string>
+    <string name="reveal_role">Ver mi rol</string>
+    <string name="hide_and_pass">Ocultar y pasar</string>
+    <string name="you_are_impostor">ERES EL IMPOSTOR</string>
+    <string name="impostor_desc">Nadie debe descubrirte. Escucha las pistas de los demás y finge que conoces la palabra.</string>
+    <string name="secret_word">La palabra secreta es</string>
+    <string name="civil_desc">Da pistas sutiles: que el impostor no la adivine, pero que los demás sepan que la conoces.</string>
+    <string name="round">Ronda</string>
+    <string name="starts">Empieza</string>
+    <string name="alive_players">Jugadores en juego</string>
+    <string name="vote">Votar para eliminar</string>
+    <string name="end_game">Terminar partida</string>
+    <string name="timer_start">Iniciar</string>
+    <string name="timer_pause">Pausar</string>
+    <string name="timer_reset">Reiniciar</string>
+    <string name="add_word">Agregar</string>
+    <string name="new_word_hint">Nueva palabra (separa varias con comas)</string>
+    <string name="new_category">Nueva categoría</string>
+    <string name="delete_category">Eliminar categoría</string>
+    <string name="use_in_game">Usar esta categoría en el juego</string>
+    <string name="restore_defaults">Restaurar palabras originales</string>
+    <string name="back_to_menu">Menú principal</string>
+    <string name="play_again">Jugar otra vez</string>
+</resources>

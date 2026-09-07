@@ -1,0 +1,31 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.impostor.juego'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.impostor.juego"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+// La app usa solo el framework de Android (sin AndroidX) para mantener el APK pequeño.
+dependencies {
+}

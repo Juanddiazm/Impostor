@@ -1,0 +1,15 @@
+# Build outputs
+build/
+app/build/
+.gradle/
+*.iml
+.idea/
+local.properties
+*.jks
+!keystore/*.jks
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+!release/*.apk
+tools/
