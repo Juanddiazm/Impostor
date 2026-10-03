@@ -1,14 +1,16 @@
 # Impostor 🕵️
 
 Juego de fiesta para Android: todos los jugadores reciben la misma palabra secreta… menos el
-impostor, que tiene que fingir que la conoce. Se juega con un solo teléfono que se va pasando.
+impostor, que tiene que fingir que la conoce. Incluye también el modo **Undercover**. Se juega con
+un solo teléfono que se va pasando.
 
-**APK listo para instalar:** [`release/impostor-v1.0.apk`](release/impostor-v1.0.apk)
-(Android 5.0 o superior, ~90 KB, sin permisos ni internet).
+**APK listo para instalar:** [`release/impostor-v1.1.apk`](release/impostor-v1.1.apk)
+(Android 5.0 o superior, ~100 KB, sin permisos ni internet).
 
 ## Cómo se juega
 
-1. Configura la partida: número de jugadores (3 a 20), sus nombres, cuántos impostores hay,
+1. Configura la partida: modo de juego (Impostor o Undercover), número de jugadores (3 a 20),
+   sus nombres, cuántos impostores hay,
    qué categorías de palabras usar, si el impostor recibe la categoría como pista y un
    temporizador opcional por ronda.
 2. Cada jugador toma el teléfono, pulsa **Ver mi rol**, lo lee en privado y pulsa
@@ -20,6 +22,26 @@ impostor, que tiene que fingir que la conoce. Se juega con un solo teléfono que
    - Si no lo era, la partida sigue con otra ronda de pistas.
 5. Ganan los jugadores cuando descubren a todos los impostores. Ganan los impostores cuando
    llegan a ser tantos como el resto.
+
+## Modo Undercover
+
+Se elige en **Configurar partida > Modo de juego**. Nadie sabe con certeza de qué equipo es:
+
+- **Civiles:** reciben una palabra (por ejemplo, *Perro*).
+- **Undercover:** recibe una palabra parecida (por ejemplo, *Gato*) y ve exactamente la misma
+  pantalla que los civiles, así que no sabe que es undercover hasta que lo deduce por las pistas.
+- **Mr. White** (opcional, 0 o más): no recibe palabra, sabe que es Mr. White y nunca empieza
+  la ronda. Puede recibir la categoría como pista.
+
+Al eliminar a alguien se revela su rol, pero no su palabra. Si eliminan a Mr. White, tiene una
+última oportunidad de adivinar la palabra de los civiles: si acierta, gana él. Ganan los civiles
+al eliminar a todos los undercovers y Mr. White; ganan los infiltrados si sobreviven hasta que
+solo queda un civil.
+
+La app incluye más de 250 parejas de palabras parecidas repartidas en las 14 categorías (se sortea
+cuál es la de los civiles). Respeta las categorías elegidas y no usa parejas con palabras que
+hayas ocultado. En las categorías creadas por ti se forman parejas al azar con sus palabras (hace
+falta que tengan al menos dos).
 
 ## Agregar tus propias palabras
 
@@ -43,8 +65,8 @@ app/src/main/java/com/impostor/juego/
     RevealActivity.java   Pantalla "pasa el teléfono" para ver el rol
     GameActivity.java     Rondas, temporizador, votación y resultado
     WordsActivity.java    Gestión de palabras y categorías
-    WordRepository.java   Palabras incluidas + palabras del usuario (SharedPreferences)
-    GameState.java        Estado de la partida
+    WordRepository.java   Palabras y parejas Undercover incluidas + palabras del usuario
+    GameState.java        Estado de la partida (modos Impostor y Undercover)
 app/src/main/res/         Layouts, estilos, colores e iconos
 scripts/                  Build sin Android Studio (ver abajo)
 keystore/impostor.jks     Clave de firma (alias `impostor`, contraseña `impostor123`)
@@ -79,7 +101,7 @@ herramientas sueltas en la carpeta `tools/`:
 | `json.jar`          | Solo para `scripts/run-tests.sh`: Maven Central, `org.json:json:20240303`  |
 
 ```
-scripts/build-apk.sh release/impostor-v1.0.apk
+scripts/build-apk.sh release/impostor-v1.1.apk
 ```
 
 Para firmar se usa `keystore/impostor.jks`. El paso de firma v1 de apksig 2.3.0 necesita un JDK
@@ -89,4 +111,4 @@ Para firmar se usa `keystore/impostor.jks`. El paso de firma v1 de apksig 2.3.0 
 
 `scripts/run-tests.sh` compila la lógica del juego contra `android.jar` y ejecuta
 `scripts/LogicTest.java` en la JVM (palabras personalizadas, ocultar/restaurar, categorías,
-reparto de roles y condiciones de victoria).
+parejas del modo Undercover, reparto de roles y condiciones de victoria de ambos modos).

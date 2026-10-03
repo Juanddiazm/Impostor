@@ -72,13 +72,15 @@ public class RevealActivity extends Activity {
     private void showRole() {
         passPanel.setVisibility(View.GONE);
         rolePanel.setVisibility(View.VISIBLE);
-        boolean impostor = game.isImpostor[index];
-        if (impostor) {
+        String word = game.wordFor(index);
+        if (word == null) {
+            // Impostor o Mr. White: sin palabra.
+            boolean mrWhite = game.isMrWhite[index];
             roleCard.setBackgroundResource(R.drawable.bg_card_impostor);
             txtRoleTitle.setText(game.players.get(index) + ", tu rol es…");
-            txtWord.setText(R.string.you_are_impostor);
-            txtWord.setTextColor(getResources().getColor(R.color.primary));
-            txtRoleDesc.setText(R.string.impostor_desc);
+            txtWord.setText(mrWhite ? R.string.you_are_mr_white : R.string.you_are_impostor);
+            txtWord.setTextColor(getResources().getColor(mrWhite ? R.color.warn : R.color.primary));
+            txtRoleDesc.setText(mrWhite ? R.string.mr_white_desc : R.string.impostor_desc);
             if (game.hintForImpostor) {
                 txtCategory.setVisibility(View.VISIBLE);
                 txtCategory.setText("Pista: " + game.category);
@@ -86,11 +88,12 @@ public class RevealActivity extends Activity {
                 txtCategory.setVisibility(View.GONE);
             }
         } else {
+            // En modo Undercover civiles y undercovers ven la misma pantalla: nadie sabe qué es.
             roleCard.setBackgroundResource(R.drawable.bg_card_civil);
-            txtRoleTitle.setText(R.string.secret_word);
-            txtWord.setText(game.word);
+            txtRoleTitle.setText(game.isUndercoverMode() ? R.string.your_word : R.string.secret_word);
+            txtWord.setText(word);
             txtWord.setTextColor(getResources().getColor(R.color.text));
-            txtRoleDesc.setText(R.string.civil_desc);
+            txtRoleDesc.setText(game.isUndercoverMode() ? R.string.undercover_word_desc : R.string.civil_desc);
             txtCategory.setVisibility(View.VISIBLE);
             txtCategory.setText(game.category);
         }

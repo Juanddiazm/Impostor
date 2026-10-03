@@ -94,6 +94,96 @@ public class WordRepository {
                 "Instagram", "Netflix", "Google", "Emoji", "Selfie", "Bluetooth", "Pantalla táctil", "Contraseña"});
     }
 
+
+    /**
+     * Parejas de palabras parecidas para el modo Undercover: los civiles reciben una y el
+     * undercover la otra (se sortea cuál). Cada pareja escrita como "Palabra A/Palabra B".
+     */
+    private static final LinkedHashMap<String, String[]> BUILT_IN_PAIRS = new LinkedHashMap<>();
+
+    static {
+        BUILT_IN_PAIRS.put("Animales", new String[]{
+                "Perro/Gato", "León/Tigre", "Delfín/Ballena", "Águila/Halcón", "Búho/Murciélago",
+                "Lobo/Zorro", "Caballo/Burro", "Oveja/Cabra", "Rana/Sapo", "Abeja/Avispa", "Pingüino/Foca",
+                "Mono/Gorila", "Cocodrilo/Lagarto", "Vaca/Toro", "Mariposa/Polilla", "Ratón/Hámster",
+                "Tortuga/Caracol", "Pulpo/Calamar"});
+        BUILT_IN_PAIRS.put("Comida", new String[]{
+                "Hamburguesa/Perro caliente", "Sushi/Ceviche", "Tacos/Burritos", "Empanada/Arepa",
+                "Helado/Paleta", "Chocolate/Caramelo", "Pan/Tostada", "Queso/Mantequilla", "Arroz/Pasta",
+                "Café/Té", "Churros/Buñuelos", "Pastel/Flan", "Palomitas/Papas fritas", "Sandía/Melón",
+                "Limón/Naranja", "Ketchup/Mostaza", "Pizza/Lasaña", "Pollo asado/Pavo"});
+        BUILT_IN_PAIRS.put("Lugares", new String[]{
+                "Playa/Piscina", "Hospital/Farmacia", "Escuela/Universidad", "Aeropuerto/Estación de tren",
+                "Cine/Teatro", "Biblioteca/Librería", "Supermercado/Tienda", "Museo/Galería de arte",
+                "Restaurante/Cafetería", "Parque/Plaza", "Iglesia/Catedral", "Hotel/Hostal",
+                "Zoológico/Acuario", "Selva/Bosque", "Discoteca/Bar", "Casino/Bingo", "Cárcel/Comisaría",
+                "Gimnasio/Spa"});
+        BUILT_IN_PAIRS.put("Profesiones", new String[]{
+                "Médico/Enfermero", "Bombero/Policía", "Chef/Panadero", "Piloto/Azafata", "Abogado/Juez",
+                "Ingeniero/Arquitecto", "Actor/Cantante", "Futbolista/Árbitro", "Astronauta/Científico",
+                "Carpintero/Albañil", "Mecánico/Electricista", "Dentista/Médico", "Periodista/Fotógrafo",
+                "Agricultor/Jardinero", "Taxista/Conductor de autobús", "Payaso/Mago", "Youtuber/Streamer",
+                "Pintor/Escultor", "Profesor/Director de escuela"});
+        BUILT_IN_PAIRS.put("Deportes", new String[]{
+                "Fútbol/Rugby", "Baloncesto/Voleibol", "Tenis/Bádminton", "Natación/Waterpolo",
+                "Ciclismo/Motociclismo", "Boxeo/Karate", "Golf/Minigolf", "Béisbol/Críquet",
+                "Esquí/Snowboard", "Surf/Windsurf", "Ping pong/Tenis", "Bolos/Billar", "Ajedrez/Damas",
+                "Yoga/Pilates", "Fórmula 1/Rally", "Escalada/Senderismo", "Hockey/Curling",
+                "Esgrima/Kendo"});
+        BUILT_IN_PAIRS.put("Objetos", new String[]{
+                "Paraguas/Impermeable", "Reloj/Despertador", "Lámpara/Linterna", "Espejo/Ventana",
+                "Cuchara/Tenedor", "Tijeras/Cuchillo", "Almohada/Cojín", "Mochila/Maleta", "Llave/Candado",
+                "Martillo/Destornillador", "Lápiz/Bolígrafo", "Libro/Revista", "Silla/Taburete",
+                "Vela/Fósforo", "Globo/Burbuja", "Peluche/Muñeca", "Moneda/Billete", "Anillo/Collar",
+                "Gafas/Lentes de contacto", "Botella/Vaso", "Teléfono/Tablet"});
+        BUILT_IN_PAIRS.put("Transporte", new String[]{
+                "Avión/Helicóptero", "Tren/Metro", "Bicicleta/Motocicleta", "Barco/Lancha",
+                "Autobús/Tranvía", "Cohete/Nave espacial", "Patineta/Patines", "Taxi/Uber",
+                "Camión/Tractor", "Globo aerostático/Zepelín", "Canoa/Kayak",
+                "Ambulancia/Patrulla de policía", "Crucero/Ferry", "Teleférico/Ascensor",
+                "Submarino/Barco pirata"});
+        BUILT_IN_PAIRS.put("Países y ciudades", new String[]{
+                "España/Portugal", "Argentina/Uruguay", "Japón/China", "Egipto/Marruecos", "Italia/Grecia",
+                "Estados Unidos/Canadá", "Australia/Nueva Zelanda", "Alemania/Austria", "Brasil/Colombia",
+                "México/Perú", "París/Londres", "Nueva York/Los Ángeles", "Tokio/Seúl", "Roma/Atenas",
+                "Buenos Aires/Montevideo", "Bogotá/Medellín", "Madrid/Barcelona",
+                "Río de Janeiro/São Paulo", "Lima/Cusco", "Las Vegas/Mónaco"});
+        BUILT_IN_PAIRS.put("Personajes", new String[]{
+                "Superman/Capitán América", "Batman/Iron Man", "Spider-Man/Ant-Man", "Harry Potter/Merlín",
+                "Mario Bros/Luigi", "Pikachu/Sonic", "Shrek/Hulk", "Bob Esponja/Patricio",
+                "Mickey Mouse/Bugs Bunny", "Homero Simpson/Pedro Picapiedra", "Darth Vader/Voldemort",
+                "Elsa de Frozen/Cenicienta", "Goku/Naruto", "Sherlock Holmes/Detective Conan",
+                "Drácula/Frankenstein", "Papá Noel/Reyes Magos", "Peter Pan/Pinocho", "Barbie/Ken"});
+        BUILT_IN_PAIRS.put("En casa", new String[]{
+                "Cocina/Comedor", "Ducha/Bañera", "Sofá/Sillón", "Cama/Cuna", "Nevera/Congelador",
+                "Lavadora/Secadora", "Microondas/Horno", "Escoba/Trapeador", "Cortina/Persiana",
+                "Armario/Cajonera", "Inodoro/Lavamanos", "Balcón/Terraza", "Garaje/Sótano", "Jardín/Patio",
+                "Chimenea/Estufa", "Mesa/Escritorio", "Licuadora/Batidora", "Aspiradora/Escoba",
+                "Tostadora/Sandwichera", "Plancha/Secador de pelo"});
+        BUILT_IN_PAIRS.put("Naturaleza", new String[]{
+                "Sol/Luna", "Lluvia/Granizo", "Nieve/Hielo", "Volcán/Montaña", "Río/Lago", "Océano/Mar",
+                "Arcoíris/Aurora boreal", "Tormenta/Huracán", "Terremoto/Tsunami", "Isla/Península",
+                "Cueva/Túnel", "Estrella/Planeta", "Relámpago/Trueno", "Niebla/Nube", "Girasol/Margarita",
+                "Rosa/Tulipán", "Glaciar/Iceberg", "Cascada/Fuente", "Cactus/Palmera"});
+        BUILT_IN_PAIRS.put("Ropa", new String[]{
+                "Camiseta/Camisa", "Pantalón/Short", "Vestido/Falda", "Zapatos/Zapatillas",
+                "Sombrero/Gorra", "Bufanda/Corbata", "Guantes/Calcetines", "Chaqueta/Abrigo",
+                "Pijama/Bata", "Bikini/Traje de baño", "Botas/Sandalias", "Cinturón/Tirantes",
+                "Uniforme/Disfraz", "Sudadera/Suéter"});
+        BUILT_IN_PAIRS.put("Música y arte", new String[]{
+                "Guitarra/Bajo", "Piano/Órgano", "Violín/Violonchelo", "Batería/Tambor",
+                "Trompeta/Saxofón", "Flauta/Clarinete", "Micrófono/Altavoz", "Ópera/Musical",
+                "Reguetón/Trap", "Rock/Metal", "Salsa/Bachata", "Pintura/Dibujo", "Escultura/Cerámica",
+                "Teatro/Cine", "Grafiti/Mural", "Coro/Orquesta", "Karaoke/Concierto", "Cumbia/Vallenato",
+                "Rap/Reggae", "Ballet/Tango"});
+        BUILT_IN_PAIRS.put("Tecnología", new String[]{
+                "Computadora/Tablet", "Internet/Wifi", "Robot/Dron", "Auriculares/Parlante",
+                "Teclado/Ratón", "Impresora/Escáner", "Satélite/Antena", "TikTok/Instagram",
+                "YouTube/Netflix", "WhatsApp/Telegram", "Google/Wikipedia", "Emoji/Sticker", "Selfie/Foto",
+                "Contraseña/Huella digital", "Videojuego/Consola", "Bluetooth/Wifi", "Cargador/Batería",
+                "Facebook/Twitter"});
+    }
+
     private final SharedPreferences prefs;
     private JSONObject custom;
     private JSONObject hidden;
@@ -329,6 +419,50 @@ public class WordRepository {
         }
         if (pool.isEmpty()) return null;
         return pool.get(random.nextInt(pool.size()));
+    }
+
+    /**
+     * Elige una pareja de palabras parecidas para el modo Undercover entre las categorías dadas.
+     * Las categorías originales usan sus parejas incluidas (sin las que tengan una palabra oculta);
+     * las categorías creadas por el usuario forman parejas con dos de sus palabras al azar.
+     * Devuelve null si no hay ninguna pareja posible.
+     */
+    public WordPick pickPair(List<String> categories, Random random) {
+        List<WordPick> pool = new ArrayList<>();
+        for (String c : categories) {
+            String[] pairs = BUILT_IN_PAIRS.get(c);
+            if (pairs != null) {
+                JSONArray hiddenArr = hidden.optJSONArray(c);
+                for (String pair : pairs) {
+                    String[] parts = pair.split("/");
+                    if (isHidden(hiddenArr, parts[0]) || isHidden(hiddenArr, parts[1])) continue;
+                    pool.add(new WordPick(c, parts[0], parts[1]));
+                }
+            } else if (!isBuiltInCategory(c)) {
+                List<String> words = getWords(c);
+                if (words.size() < 2) continue;
+                for (int i = 0; i < words.size(); i++) {
+                    int other = random.nextInt(words.size() - 1);
+                    if (other >= i) other++;
+                    pool.add(new WordPick(c, words.get(i), words.get(other)));
+                }
+            }
+        }
+        if (pool.isEmpty()) return null;
+        WordPick pick = pool.get(random.nextInt(pool.size()));
+        // Se sortea cuál de las dos palabras es la de los civiles.
+        return random.nextBoolean() ? pick : new WordPick(pick.category, pick.undercoverWord, pick.word);
+    }
+
+    /** Número de parejas incluidas para el modo Undercover. */
+    public static int countBuiltInPairs() {
+        int total = 0;
+        for (String[] pairs : BUILT_IN_PAIRS.values()) total += pairs.length;
+        return total;
+    }
+
+    private static boolean isHidden(JSONArray hiddenArr, String word) {
+        return hiddenArr != null && indexInArray(hiddenArr, word) >= 0;
     }
 
     // ---------------------------------------------------------------- utilidades

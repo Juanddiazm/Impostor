@@ -142,6 +142,7 @@
             android:padding="24dp"
             android:background="@drawable/bg_card">
             <TextView
+                android:id="@+id/txtEndWordLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="La palabra era"

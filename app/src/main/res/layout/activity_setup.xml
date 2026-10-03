@@ -23,6 +23,47 @@
                 style="@style/Title"
                 android:textSize="26sp" />
 
+            <!-- Game mode -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/game_mode" style="@style/SectionTitle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                style="@style/Card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/btnModeImpostor"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="6dp"
+                        android:text="@string/mode_impostor"
+                        style="@style/ButtonSmall" />
+                    <Button
+                        android:id="@+id/btnModeUndercover"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="6dp"
+                        android:text="@string/mode_undercover"
+                        style="@style/ButtonSmall" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtModeDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/muted"
+                    android:layout_marginTop="10dp" />
+            </LinearLayout>
+
             <!-- Players -->
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="@string/players" style="@style/SectionTitle" />
@@ -64,33 +105,76 @@
                     android:layout_marginTop="10dp" />
             </LinearLayout>
 
-            <!-- Impostors -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            <!-- Impostors / infiltrators -->
+            <TextView android:id="@+id/txtImpostorsSection"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="@string/impostors" style="@style/SectionTitle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
+                android:orientation="vertical"
                 style="@style/Card">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Cantidad de impostores"
-                    android:textSize="16sp" />
-                <Button android:id="@+id/btnImpostorsMinus" style="@style/Stepper" android:text="−" />
-                <TextView
-                    android:id="@+id/txtImpostors"
-                    android:layout_width="44dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:id="@+id/txtImpostorsLabel"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="@string/impostor_count"
+                        android:textSize="16sp" />
+                    <Button android:id="@+id/btnImpostorsMinus" style="@style/Stepper" android:text="−" />
+                    <TextView
+                        android:id="@+id/txtImpostors"
+                        android:layout_width="44dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary"
+                        android:text="1" />
+                    <Button android:id="@+id/btnImpostorsPlus" style="@style/Stepper" android:text="+" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rowMrWhite"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/primary"
-                    android:text="1" />
-                <Button android:id="@+id/btnImpostorsPlus" style="@style/Stepper" android:text="+" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="10dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="@string/mr_white_count"
+                        android:textSize="16sp" />
+                    <Button android:id="@+id/btnMrWhiteMinus" style="@style/Stepper" android:text="−" />
+                    <TextView
+                        android:id="@+id/txtMrWhite"
+                        android:layout_width="44dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/warn"
+                        android:text="0" />
+                    <Button android:id="@+id/btnMrWhitePlus" style="@style/Stepper" android:text="+" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtInfiltratorsNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/infiltrators_note"
+                    android:textSize="13sp"
+                    android:textColor="@color/muted"
+                    android:layout_marginTop="10dp" />
             </LinearLayout>
 
             <!-- Categories -->

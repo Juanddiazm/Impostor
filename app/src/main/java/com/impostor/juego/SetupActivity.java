@@ -5,10 +5,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -29,12 +31,17 @@ public class SetupActivity extends Activity {
     private WordRepository repo;
     private SharedPreferences prefs;
 
+    private int mode = GameState.MODE_IMPOSTOR;
     private int playerCount = 5;
     private int impostorCount = 1;
+    private int mrWhiteCount = 0;
     private int timerMinutes = 0;
     private final List<String> names = new ArrayList<>();
 
-    private TextView txtPlayers, txtImpostors, txtTime, txtCategories;
+    private TextView txtPlayers, txtImpostors, txtMrWhite, txtTime, txtCategories;
+    private TextView txtModeDesc, txtImpostorsSection, txtImpostorsLabel;
+    private View rowMrWhite, txtInfiltratorsNote;
+    private Button btnModeImpostor, btnModeUndercover;
     private LinearLayout namesContainer;
     private Switch switchHint;
 
@@ -47,20 +54,42 @@ public class SetupActivity extends Activity {
 
         txtPlayers = findViewById(R.id.txtPlayers);
         txtImpostors = findViewById(R.id.txtImpostors);
+        txtMrWhite = findViewById(R.id.txtMrWhite);
+        txtModeDesc = findViewById(R.id.txtModeDesc);
+        txtImpostorsSection = findViewById(R.id.txtImpostorsSection);
+        txtImpostorsLabel = findViewById(R.id.txtImpostorsLabel);
+        rowMrWhite = findViewById(R.id.rowMrWhite);
+        txtInfiltratorsNote = findViewById(R.id.txtInfiltratorsNote);
+        btnModeImpostor = findViewById(R.id.btnModeImpostor);
+        btnModeUndercover = findViewById(R.id.btnModeUndercover);
         txtTime = findViewById(R.id.txtTime);
         txtCategories = findViewById(R.id.txtCategories);
         namesContainer = findViewById(R.id.namesContainer);
         switchHint = findViewById(R.id.switchHint);
 
         // Restaurar la última configuración usada.
+        mode = prefs.getInt("mode", GameState.MODE_IMPOSTOR);
         playerCount = prefs.getInt("players", 5);
         impostorCount = prefs.getInt("impostors", 1);
+        mrWhiteCount = prefs.getInt("mrwhite", 0);
         timerMinutes = prefs.getInt("minutes", 0);
         switchHint.setChecked(prefs.getBoolean("hint", true));
         for (int i = 0; i < MAX_PLAYERS; i++) {
             names.add(prefs.getString("name" + i, ""));
         }
 
+        btnModeImpostor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setMode(GameState.MODE_IMPOSTOR);
+            }
+        });
+        btnModeUndercover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setMode(GameState.MODE_UNDERCOVER);
+            }
+        });
         findViewById(R.id.btnPlayersMinus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,7 +112,21 @@ public class SetupActivity extends Activity {
         findViewById(R.id.btnImpostorsPlus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                impostorCount = Math.min(maxImpostors(), impostorCount + 1);
+                impostorCount = Math.min(maxImpostors() - mrWhites(), impostorCount + 1);
+                refreshCounters();
+            }
+        });
+        findViewById(R.id.btnMrWhiteMinus).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mrWhiteCount = Math.max(0, mrWhiteCount - 1);
+                refreshCounters();
+            }
+        });
+        findViewById(R.id.btnMrWhitePlus).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mrWhiteCount = Math.min(maxImpostors() - impostorCount, mrWhiteCount + 1);
                 refreshCounters();
             }
         });
@@ -115,6 +158,8 @@ public class SetupActivity extends Activity {
         });
 
         buildNameFields();
+        clampCounts();
+        refreshMode();
         refreshCounters();
     }
 
@@ -125,21 +170,58 @@ public class SetupActivity extends Activity {
         refreshCategoriesLabel();
     }
 
+    /** Máximo de jugadores no civiles (impostores, o undercovers + Mr. White). */
     private int maxImpostors() {
         return Math.max(1, (playerCount - 1) / 2);
+    }
+
+    /** Mr. White solo existe en modo Undercover. */
+    private int mrWhites() {
+        return mode == GameState.MODE_UNDERCOVER ? mrWhiteCount : 0;
+    }
+
+    /** Ajusta impostores y Mr. White al máximo permitido para la cantidad de jugadores. */
+    private void clampCounts() {
+        impostorCount = Math.max(1, Math.min(impostorCount, maxImpostors()));
+        mrWhiteCount = Math.max(0, Math.min(mrWhiteCount, maxImpostors() - impostorCount));
     }
 
     private void changePlayers(int delta) {
         collectNames();
         playerCount = Math.max(MIN_PLAYERS, Math.min(MAX_PLAYERS, playerCount + delta));
-        impostorCount = Math.min(impostorCount, maxImpostors());
+        clampCounts();
         buildNameFields();
         refreshCounters();
+    }
+
+    private void setMode(int newMode) {
+        mode = newMode;
+        clampCounts();
+        refreshMode();
+        refreshCounters();
+    }
+
+    private void refreshMode() {
+        boolean undercover = mode == GameState.MODE_UNDERCOVER;
+        styleModeButton(btnModeImpostor, !undercover);
+        styleModeButton(btnModeUndercover, undercover);
+        txtModeDesc.setText(undercover ? R.string.mode_undercover_desc : R.string.mode_impostor_desc);
+        txtImpostorsSection.setText(undercover ? R.string.infiltrators : R.string.impostors);
+        txtImpostorsLabel.setText(undercover ? R.string.undercover_count : R.string.impostor_count);
+        rowMrWhite.setVisibility(undercover ? View.VISIBLE : View.GONE);
+        txtInfiltratorsNote.setVisibility(undercover ? View.VISIBLE : View.GONE);
+        switchHint.setText(undercover ? R.string.hint_for_mr_white : R.string.hint_for_impostor);
+    }
+
+    private void styleModeButton(Button button, boolean selected) {
+        button.setBackgroundResource(selected ? R.drawable.bg_button_primary : R.drawable.bg_button_secondary);
+        button.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
     }
 
     private void refreshCounters() {
         txtPlayers.setText(String.valueOf(playerCount));
         txtImpostors.setText(String.valueOf(impostorCount));
+        txtMrWhite.setText(String.valueOf(mrWhiteCount));
         txtTime.setText(timerMinutes == 0 ? getString(R.string.no_limit)
                 : String.format(Locale.getDefault(), "%d min", timerMinutes));
     }
@@ -246,16 +328,21 @@ public class SetupActivity extends Activity {
         }
 
         SharedPreferences.Editor editor = prefs.edit()
+                .putInt("mode", mode)
                 .putInt("players", playerCount)
                 .putInt("impostors", impostorCount)
+                .putInt("mrwhite", mrWhiteCount)
                 .putInt("minutes", timerMinutes)
                 .putBoolean("hint", switchHint.isChecked());
         for (int i = 0; i < MAX_PLAYERS; i++) editor.putString("name" + i, names.get(i));
         editor.apply();
 
-        GameState game = new GameState(players, impostorCount, switchHint.isChecked(), timerMinutes, categories);
+        GameState game = new GameState(players, mode, impostorCount, mrWhites(),
+                switchHint.isChecked(), timerMinutes, categories);
         if (!game.newRound(repo)) {
-            Toast.makeText(this, "No hay palabras disponibles en las categorías elegidas", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, mode == GameState.MODE_UNDERCOVER
+                    ? "No hay parejas de palabras en las categorías elegidas"
+                    : "No hay palabras disponibles en las categorías elegidas", Toast.LENGTH_LONG).show();
             return;
         }
         GameState.current = game;

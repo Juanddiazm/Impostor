@@ -54,7 +54,15 @@ public class MainActivity extends Activity {
                 + "5. Al terminar la ronda, todos discuten y votan para eliminar a un sospechoso.\n\n"
                 + "6. Si eliminan al impostor, este tiene una última oportunidad: si adivina la palabra, gana.\n\n"
                 + "7. Ganan los jugadores si descubren a todos los impostores. "
-                + "Ganan los impostores si llegan a ser tantos como el resto de jugadores.";
+                + "Ganan los impostores si llegan a ser tantos como el resto de jugadores.\n\n"
+                + "MODO UNDERCOVER\n\n"
+                + "• Los civiles reciben una palabra y el undercover otra parecida (por ejemplo, "
+                + "Perro y Gato). Nadie sabe si es civil o undercover: hay que deducirlo por las pistas.\n\n"
+                + "• Mr. White (opcional) no recibe palabra y nunca empieza la ronda. Si lo eliminan, "
+                + "puede adivinar la palabra de los civiles: si acierta, gana él.\n\n"
+                + "• Al eliminar a alguien se revela su rol (civil, undercover o Mr. White), pero no su palabra.\n\n"
+                + "• Ganan los civiles si eliminan a todos los undercovers y Mr. White. "
+                + "Ganan los infiltrados si sobreviven hasta que solo queda un civil.";
         new AlertDialog.Builder(this)
                 .setTitle("Cómo jugar")
                 .setMessage(rules)

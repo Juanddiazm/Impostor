@@ -128,6 +128,88 @@ public class LogicTest {
         for (int k = 0; k < 300; k++) { g.newRound(repo2); for (int i = 0; i < 5; i++) if (g.isImpostor[i]) everImpostor[i] = true; }
         for (int i = 0; i < 5; i++) check(everImpostor[i], "jugador " + i + " nunca fue impostor");
 
+        for (int i = 0; i < 5; i++) check(!g.isMrWhite[i], "sin Mr. White en modo Impostor");
+
+        // ---------------------------------------------------------- modo Undercover
+        WordRepository repo3 = new WordRepository(new FakePrefs());
+        check(WordRepository.countBuiltInPairs() > 200, "más de 200 parejas: " + WordRepository.countBuiltInPairs());
+        Set<String> civilSeen = new HashSet<>(), undercoverSeen = new HashSet<>();
+        for (int k = 0; k < 2000; k++) {
+            WordPick p = repo3.pickPair(repo3.getCategories(), rnd);
+            check(p != null && p.word != null && p.undercoverWord != null, "pareja completa");
+            check(!WordRepository.normalize(p.word).equals(WordRepository.normalize(p.undercoverWord)),
+                    "palabras distintas: " + p.word);
+            check(repo3.isBuiltInCategory(p.category), "categoría válida");
+            civilSeen.add(p.word);
+            undercoverSeen.add(p.undercoverWord);
+        }
+        check(civilSeen.contains("Perro") || undercoverSeen.contains("Perro"), "Perro/Gato sale");
+        // Se sortea qué palabra es la de los civiles: ambas palabras de una pareja aparecen en los dos lados.
+        Set<String> both = new HashSet<>(civilSeen);
+        both.retainAll(undercoverSeen);
+        check(both.size() > 50, "las palabras cambian de lado: " + both.size());
+        // Solo categorías elegidas
+        for (int k = 0; k < 200; k++) {
+            check(repo3.pickPair(Arrays.asList("Ropa"), rnd).category.equals("Ropa"), "solo Ropa");
+        }
+        // Las parejas con una palabra oculta no se usan
+        repo3.removeWord("Animales", "Perro");
+        for (int k = 0; k < 1000; k++) {
+            WordPick p = repo3.pickPair(Arrays.asList("Animales"), rnd);
+            check(!p.word.equals("Perro") && !p.undercoverWord.equals("Perro"), "Perro oculto no sale");
+        }
+        // Categorías del usuario: parejas al azar con sus palabras (mínimo 2)
+        repo3.addCategory("Amigos");
+        repo3.addWord("Amigos", "Juan");
+        check(repo3.pickPair(Arrays.asList("Amigos"), rnd) == null, "1 palabra -> sin pareja");
+        repo3.addWords("Amigos", "Pedro, Luisa");
+        Set<String> amigos = new HashSet<>(Arrays.asList("Juan", "Pedro", "Luisa"));
+        for (int k = 0; k < 300; k++) {
+            WordPick p = repo3.pickPair(Arrays.asList("Amigos"), rnd);
+            check(amigos.contains(p.word) && amigos.contains(p.undercoverWord) && !p.word.equals(p.undercoverWord),
+                    "pareja de categoría propia");
+        }
+
+        List<String> six = Arrays.asList("Ana", "Beto", "Caro", "Dani", "Eli", "Fede");
+        GameState u = new GameState(six, GameState.MODE_UNDERCOVER, 1, 1, true, 0, Arrays.asList("Animales", "Comida"));
+        check(u.isUndercoverMode(), "modo undercover");
+        check(u.newRound(repo3), "nueva partida undercover");
+        int und = 0, mw = 0, civ = 0;
+        for (int i = 0; i < 6; i++) {
+            if (u.isMrWhite[i]) { mw++; check(u.isImpostor[i] && u.wordFor(i) == null, "Mr. White sin palabra"); }
+            else if (u.isUndercover(i)) { und++; check(u.undercoverWord.equals(u.wordFor(i)), "undercover ve su palabra"); }
+            else { civ++; check(u.word.equals(u.wordFor(i)), "civil ve la palabra"); }
+        }
+        check(und == 1 && mw == 1 && civ == 4, "reparto 4/1/1");
+        check(u.impostorsAlive() == 2 && u.civiliansAlive() == 4, "vivos undercover");
+        check(u.impostorNames().size() == 1 && u.mrWhiteNames().size() == 1, "nombres por rol");
+        check(!u.civiliansWin() && !u.impostorsWin(), "sin ganador al inicio (undercover)");
+        // Eliminar civiles: con 2 civiles y 2 infiltrados la partida sigue; con 1 civil ganan los infiltrados.
+        int killed = 0;
+        for (int i = 0; i < 6 && killed < 2; i++) if (!u.isImpostor[i]) { u.alive[i] = false; killed++; }
+        check(!u.impostorsWin() && !u.civiliansWin(), "2 civiles vs 2 infiltrados: sigue");
+        for (int i = 0; i < 6; i++) if (!u.isImpostor[i] && u.alive[i]) { u.alive[i] = false; break; }
+        check(u.impostorsWin(), "un solo civil: ganan los infiltrados");
+        // Eliminar a los dos infiltrados: ganan los civiles.
+        u.newRound(repo3);
+        for (int i = 0; i < 6; i++) if (u.isImpostor[i]) u.alive[i] = false;
+        check(u.civiliansWin() && !u.impostorsWin(), "civiles ganan (undercover)");
+        // Mr. White nunca empieza la ronda.
+        for (int k = 0; k < 300; k++) {
+            u.newRound(repo3);
+            check(!u.isMrWhite[u.starterIndex], "Mr. White no empieza");
+            u.nextRound();
+            check(!u.isMrWhite[u.starterIndex] && u.alive[u.starterIndex], "Mr. White no empieza ronda 2");
+        }
+        // Sin categorías con parejas -> no se puede empezar
+        GameState empty = new GameState(six, GameState.MODE_UNDERCOVER, 1, 0, true, 0, new ArrayList<String>());
+        check(!empty.newRound(repo3), "sin parejas -> false");
+        // Sin Mr. White: todos los infiltrados son undercover
+        GameState u2 = new GameState(six, GameState.MODE_UNDERCOVER, 2, 0, false, 0, Arrays.asList("Deportes"));
+        u2.newRound(repo3);
+        int u2c = 0; for (int i = 0; i < 6; i++) { check(!u2.isMrWhite[i], "sin Mr. White"); if (u2.isUndercover(i)) u2c++; }
+        check(u2c == 2, "2 undercovers");
+
         System.out.println("OK: " + checks + " comprobaciones pasaron");
     }
 }
