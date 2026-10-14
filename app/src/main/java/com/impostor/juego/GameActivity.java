@@ -10,25 +10,30 @@ import android.os.CountDownTimer;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 /** Rondas de pistas, temporizador, votación y resultado final. */
 public class GameActivity extends Activity {
 
+    /** Quién ganó, para el color del resultado. */
+    private static final int END_CIVILIANS = 0;
+    private static final int END_IMPOSTORS = 1;
+    private static final int END_MR_WHITE = 2;
+    private static final int END_NONE = 3;
+
     private GameState game;
 
-    private View gamePanel, endPanel, timerCard;
-    private TextView txtRound, txtStarter, txtTimer;
-    private TextView txtEndTitle, txtEndWordLabel, txtEndWord, txtEndImpostors, txtEndDetail;
-    private Button btnTimerToggle;
-    private LinearLayout playersContainer;
+    private View gamePanel, endPanel, timerCard, endUndercoverCard;
+    private LinearLayout endBanner, playersContainer, rolesContainer;
+    private TextView txtRound, txtModeTag, txtStarter, txtTimer, txtVoteTitle, txtAlive;
+    private TextView txtEndKicker, txtEndTitle, txtEndDetail, txtEndWordLabel, txtEndWord;
+    private TextView txtEndUndercoverWord, txtEndCategory;
+    private ImageButton btnTimerToggle;
 
     private CountDownTimer timer;
     private long remainingMillis;
@@ -48,16 +53,24 @@ public class GameActivity extends Activity {
         gamePanel = findViewById(R.id.gamePanel);
         endPanel = findViewById(R.id.endPanel);
         timerCard = findViewById(R.id.timerCard);
+        endUndercoverCard = findViewById(R.id.endUndercoverCard);
+        endBanner = findViewById(R.id.endBanner);
+        playersContainer = findViewById(R.id.playersContainer);
+        rolesContainer = findViewById(R.id.rolesContainer);
         txtRound = findViewById(R.id.txtRound);
+        txtModeTag = findViewById(R.id.txtModeTag);
         txtStarter = findViewById(R.id.txtStarter);
         txtTimer = findViewById(R.id.txtTimer);
-        btnTimerToggle = findViewById(R.id.btnTimerToggle);
-        playersContainer = findViewById(R.id.playersContainer);
+        txtVoteTitle = findViewById(R.id.txtVoteTitle);
+        txtAlive = findViewById(R.id.txtAlive);
+        txtEndKicker = findViewById(R.id.txtEndKicker);
         txtEndTitle = findViewById(R.id.txtEndTitle);
+        txtEndDetail = findViewById(R.id.txtEndDetail);
         txtEndWordLabel = findViewById(R.id.txtEndWordLabel);
         txtEndWord = findViewById(R.id.txtEndWord);
-        txtEndImpostors = findViewById(R.id.txtEndImpostors);
-        txtEndDetail = findViewById(R.id.txtEndDetail);
+        txtEndUndercoverWord = findViewById(R.id.txtEndUndercoverWord);
+        txtEndCategory = findViewById(R.id.txtEndCategory);
+        btnTimerToggle = findViewById(R.id.btnTimerToggle);
 
         btnTimerToggle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,12 +82,6 @@ public class GameActivity extends Activity {
             @Override
             public void onClick(View v) {
                 resetTimer();
-            }
-        });
-        findViewById(R.id.btnVote).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showVoteDialog();
             }
         });
         findViewById(R.id.btnEnd).setOnClickListener(new View.OnClickListener() {
@@ -100,9 +107,16 @@ public class GameActivity extends Activity {
             }
         });
 
+        boolean undercover = game.isUndercoverMode();
+        txtModeTag.setText(undercover ? R.string.mode_undercover : R.string.mode_impostor);
+        txtModeTag.setBackgroundResource(undercover ? R.drawable.bg_tag_amber : R.drawable.bg_tag_red);
+        txtModeTag.setTextColor(Ui.color(this, undercover ? R.color.amber : R.color.primary));
+        txtVoteTitle.setText(undercover ? R.string.vote_title_undercover : R.string.vote_title_impostor);
+
         if (game.timerMinutes == 0) {
             timerCard.setVisibility(View.GONE);
         }
+        Ui.applyFonts(findViewById(android.R.id.content));
         resetTimer();
         refreshRound();
     }
@@ -112,20 +126,74 @@ public class GameActivity extends Activity {
     private void refreshRound() {
         txtRound.setText(getString(R.string.round) + " " + game.round);
         txtStarter.setText(game.players.get(game.starterIndex));
+        int alive = 0;
+        for (boolean a : game.alive) if (a) alive++;
+        txtAlive.setText(alive + " en juego");
+
         playersContainer.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(this);
+        LinearLayout row = null;
+        int gap = Ui.dp(this, 10);
         for (int i = 0; i < game.players.size(); i++) {
-            TextView chip = (TextView) inflater.inflate(R.layout.item_player, playersContainer, false);
-            String name = game.players.get(i);
-            if (game.alive[i]) {
-                chip.setText(i == game.starterIndex ? "▶ " + name : name);
-            } else {
-                chip.setText(name + "  · " + deadLabel(i));
-                chip.setBackgroundResource(R.drawable.bg_chip_dead);
-                chip.setTextColor(getResources().getColor(R.color.muted));
-                chip.setPaintFlags(chip.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            if (i % 2 == 0) {
+                row = new LinearLayout(this);
+                row.setOrientation(LinearLayout.HORIZONTAL);
+                LinearLayout.LayoutParams rowLp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                if (i > 0) rowLp.topMargin = gap;
+                playersContainer.addView(row, rowLp);
             }
-            playersContainer.addView(chip);
+            View tile = inflater.inflate(R.layout.item_player_tile, row, false);
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) tile.getLayoutParams();
+            if (i % 2 == 1) lp.leftMargin = gap;
+            bindTile(tile, i);
+            row.addView(tile, lp);
+        }
+        // Fila impar: un hueco para que la última ficha no ocupe todo el ancho.
+        if (game.players.size() % 2 == 1 && row != null) {
+            View spacer = new View(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, 1, 1);
+            lp.leftMargin = gap;
+            row.addView(spacer, lp);
+        }
+        Ui.applyFonts(playersContainer);
+    }
+
+    private void bindTile(View tile, final int i) {
+        String name = game.players.get(i);
+        TextView avatar = tile.findViewById(R.id.txtAvatar);
+        TextView txtName = tile.findViewById(R.id.txtName);
+        TextView txtSub = tile.findViewById(R.id.txtSub);
+        txtName.setText(name);
+        avatar.setText(name.substring(0, 1).toUpperCase(Locale.getDefault()));
+        if (game.alive[i]) {
+            boolean starter = i == game.starterIndex;
+            if (starter) {
+                tile.setBackgroundResource(R.drawable.bg_tile_starter);
+                avatar.setBackgroundResource(R.drawable.bg_avatar_bone);
+                avatar.setTextColor(Ui.color(this, R.color.ink));
+                txtName.setTypeface(txtName.getTypeface(), android.graphics.Typeface.BOLD);
+                txtSub.setVisibility(View.VISIBLE);
+                txtSub.setText(R.string.starts_lower);
+            }
+            tile.setContentDescription("Eliminar a " + name);
+            tile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    confirmEliminate(i);
+                }
+            });
+        } else {
+            tile.setBackgroundResource(R.drawable.bg_tile_dead);
+            tile.setClickable(false);
+            avatar.setVisibility(View.GONE);
+            tile.findViewById(R.id.imgDead).setVisibility(View.VISIBLE);
+            txtName.setTextColor(Ui.color(this, R.color.muted));
+            txtName.setPaintFlags(txtName.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            txtSub.setVisibility(View.VISIBLE);
+            txtSub.setText(deadLabel(i));
+            txtSub.setTextColor(Ui.color(this, roleColor(i)));
+            tile.setContentDescription(name + ", " + deadLabel(i));
         }
     }
 
@@ -141,12 +209,18 @@ public class GameActivity extends Activity {
         return "civil";
     }
 
+    private int roleColor(int i) {
+        if (game.isMrWhite[i]) return R.color.text;
+        if (game.isImpostor[i]) return game.isUndercoverMode() ? R.color.amber : R.color.primary;
+        return game.isUndercoverMode() ? R.color.good : R.color.muted;
+    }
+
     // ------------------------------------------------------------------ temporizador
 
     private void startTimer() {
         if (remainingMillis <= 0) resetTimer();
         timerRunning = true;
-        btnTimerToggle.setText(R.string.timer_pause);
+        setToggleIcon();
         timer = new CountDownTimer(remainingMillis, 250) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -159,8 +233,8 @@ public class GameActivity extends Activity {
                 remainingMillis = 0;
                 timerRunning = false;
                 txtTimer.setText("¡Tiempo!");
-                txtTimer.setTextColor(getResources().getColor(R.color.primary));
-                btnTimerToggle.setText(R.string.timer_start);
+                txtTimer.setTextColor(Ui.color(GameActivity.this, R.color.primary));
+                setToggleIcon();
             }
         }.start();
     }
@@ -168,13 +242,18 @@ public class GameActivity extends Activity {
     private void pauseTimer() {
         if (timer != null) timer.cancel();
         timerRunning = false;
-        btnTimerToggle.setText(R.string.timer_start);
+        setToggleIcon();
+    }
+
+    private void setToggleIcon() {
+        btnTimerToggle.setImageResource(timerRunning ? R.drawable.ic_pause : R.drawable.ic_play);
+        btnTimerToggle.setContentDescription(getString(timerRunning ? R.string.timer_pause : R.string.timer_start));
     }
 
     private void resetTimer() {
         pauseTimer();
         remainingMillis = game.timerMinutes * 60L * 1000L;
-        txtTimer.setTextColor(getResources().getColor(R.color.secondary));
+        txtTimer.setTextColor(Ui.color(this, R.color.amber));
         showTime();
     }
 
@@ -185,25 +264,17 @@ public class GameActivity extends Activity {
 
     // ------------------------------------------------------------------ votación
 
-    private void showVoteDialog() {
-        final List<Integer> aliveIdx = new ArrayList<>();
-        for (int i = 0; i < game.players.size(); i++) if (game.alive[i]) aliveIdx.add(i);
-        final String[] labels = new String[aliveIdx.size()];
-        for (int i = 0; i < aliveIdx.size(); i++) labels[i] = game.players.get(aliveIdx.get(i));
-        final int[] selected = {-1};
-
+    private void confirmEliminate(final int idx) {
+        String name = game.players.get(idx);
         new AlertDialog.Builder(this)
-                .setTitle(game.isUndercoverMode() ? "¿A quién eliminan?" : "¿Quién es el impostor?")
-                .setSingleChoiceItems(labels, -1, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        selected[0] = which;
-                    }
-                })
+                .setTitle("¿Eliminar a " + name + "?")
+                .setMessage(game.isUndercoverMode()
+                        ? "Se revelará su rol, pero no su palabra."
+                        : "Si era el impostor, tendrá una última oportunidad de adivinar la palabra.")
                 .setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (selected[0] >= 0) eliminate(aliveIdx.get(selected[0]));
+                        eliminate(idx);
                     }
                 })
                 .setNegativeButton("Cancelar", null)
@@ -258,7 +329,12 @@ public class GameActivity extends Activity {
         input.setHint("Escribe tu respuesta");
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         input.setSingleLine(true);
-        int pad = (int) (20 * getResources().getDisplayMetrics().density);
+        input.setBackgroundResource(R.drawable.bg_input);
+        input.setTextColor(Ui.color(this, R.color.text));
+        input.setMinHeight(Ui.dp(this, 52));
+        input.setPadding(Ui.dp(this, 14), 0, Ui.dp(this, 14), 0);
+        Ui.applyFonts(input);
+        int pad = Ui.dp(this, 20);
         LinearLayout wrapper = new LinearLayout(this);
         wrapper.setPadding(pad, pad / 2, pad, 0);
         wrapper.addView(input, new LinearLayout.LayoutParams(
@@ -278,11 +354,9 @@ public class GameActivity extends Activity {
                         if (!guess.trim().isEmpty()
                                 && WordRepository.normalize(guess).equals(WordRepository.normalize(game.word))) {
                             if (mrWhite) {
-                                showEnd("¡Gana Mr. White!",
-                                        name + " adivinó la palabra de los civiles.", true);
+                                showEnd("Gana Mr. White", name + " adivinó la palabra de los civiles.", END_MR_WHITE);
                             } else {
-                                showEnd("¡Ganan los impostores!",
-                                        name + " adivinó la palabra secreta.", true);
+                                showEnd("Ganan los impostores", name + " adivinó la palabra secreta.", END_IMPOSTORS);
                             }
                         } else {
                             afterElimination();
@@ -300,13 +374,13 @@ public class GameActivity extends Activity {
 
     private void afterElimination() {
         if (game.isUndercoverMode() && game.civiliansWin()) {
-            showEnd("¡Ganan los civiles!", "Descubrieron a todos los infiltrados.", false);
+            showEnd("Ganan los civiles", "Descubrieron a todos los infiltrados.", END_CIVILIANS);
         } else if (game.isUndercoverMode() && game.impostorsWin()) {
-            showEnd("¡Ganan los infiltrados!", "Sobrevivieron hasta que solo quedó un civil.", true);
+            showEnd("Ganan los infiltrados", "Sobrevivieron hasta que solo quedó un civil.", END_IMPOSTORS);
         } else if (game.civiliansWin()) {
-            showEnd("¡Ganan los jugadores!", "Descubrieron a todos los impostores.", false);
+            showEnd("Ganan los jugadores", "Descubrieron a todos los impostores.", END_CIVILIANS);
         } else if (game.impostorsWin()) {
-            showEnd("¡Ganan los impostores!", "Ya son tantos como el resto de jugadores.", true);
+            showEnd("Ganan los impostores", "Ya son tantos como el resto de jugadores.", END_IMPOSTORS);
         } else {
             game.nextRound();
             resetTimer();
@@ -325,44 +399,87 @@ public class GameActivity extends Activity {
                 .setPositiveButton("Terminar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        showEnd("Partida terminada", "", game.impostorsAlive() > 0);
+                        showEnd("Partida terminada", "Nadie ganó esta vez.", END_NONE);
                     }
                 })
                 .setNegativeButton("Seguir jugando", null)
                 .show();
     }
 
-    private void showEnd(String title, String detail, boolean impostorsWon) {
+    private void showEnd(String title, String detail, int outcome) {
         pauseTimer();
         finished = true;
         gamePanel.setVisibility(View.GONE);
         endPanel.setVisibility(View.VISIBLE);
-        txtEndTitle.setText(title);
-        txtEndTitle.setTextColor(getResources().getColor(impostorsWon ? R.color.primary : R.color.good));
-        txtEndWord.setText(game.word);
-        String info = "Categoría: " + game.category;
-        if (game.isUndercoverMode()) {
-            txtEndWordLabel.setText("La palabra de los civiles era");
-            String roles = joinNames("Undercover: ", "Undercovers: ", game.impostorNames());
-            if (!game.mrWhiteNames().isEmpty()) {
-                roles += "\n" + joinNames("Mr. White: ", "Mr. White: ", game.mrWhiteNames());
-            }
-            txtEndImpostors.setText(roles);
-            info = "Palabra del undercover: " + game.undercoverWord + "\n" + info;
-        } else {
-            txtEndWordLabel.setText("La palabra era");
-            txtEndImpostors.setText(joinNames("Impostor: ", "Impostores: ", game.impostorNames()));
-        }
-        txtEndDetail.setText(detail.isEmpty() ? info : detail + "\n" + info);
-    }
 
-    private static String joinNames(String singular, String plural, List<String> names) {
-        StringBuilder sb = new StringBuilder(names.size() == 1 ? singular : plural);
-        for (int i = 0; i < names.size(); i++) {
-            if (i > 0) sb.append(", ");
-            sb.append(names.get(i));
+        int bannerBg, bannerText;
+        switch (outcome) {
+            case END_CIVILIANS:
+                bannerBg = R.drawable.bg_win_good;
+                bannerText = R.color.ink;
+                break;
+            case END_IMPOSTORS:
+                bannerBg = game.isUndercoverMode() ? R.drawable.bg_win_white : R.drawable.bg_win_bad;
+                bannerText = R.color.ink;
+                break;
+            case END_MR_WHITE:
+                bannerBg = R.drawable.bg_win_white;
+                bannerText = R.color.ink;
+                break;
+            default:
+                bannerBg = R.drawable.bg_win_neutral;
+                bannerText = R.color.text;
         }
-        return sb.toString();
+        endBanner.setBackgroundResource(bannerBg);
+        int c = Ui.color(this, bannerText);
+        txtEndKicker.setText(getString(R.string.round) + " " + game.round + " · fin");
+        txtEndKicker.setTextColor(c);
+        txtEndTitle.setText(title);
+        txtEndTitle.setTextColor(c);
+        txtEndDetail.setText(detail);
+        txtEndDetail.setTextColor(c);
+
+        txtEndWord.setText(game.word);
+        txtEndCategory.setText("Categoría: " + game.category);
+        if (game.isUndercoverMode()) {
+            txtEndWordLabel.setText(R.string.civilians);
+            endUndercoverCard.setVisibility(View.VISIBLE);
+            txtEndUndercoverWord.setText(game.undercoverWord);
+        } else {
+            txtEndWordLabel.setText(R.string.the_word_was);
+            endUndercoverCard.setVisibility(View.GONE);
+        }
+
+        rolesContainer.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (int i = 0; i < game.players.size(); i++) {
+            View row = inflater.inflate(R.layout.item_role_row, rolesContainer, false);
+            if (i > 0) {
+                View divider = new View(this);
+                divider.setBackgroundResource(R.color.surface_light);
+                rolesContainer.addView(divider, new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, Ui.dp(this, 1)));
+            }
+            TextView txtName = row.findViewById(R.id.txtName);
+            TextView txtRole = row.findViewById(R.id.txtRole);
+            txtName.setText(game.players.get(i));
+            String role = roleName(i);
+            txtRole.setText(role.substring(0, 1).toUpperCase(Locale.getDefault()) + role.substring(1));
+            boolean special = game.isImpostor[i];
+            Ui.applyFonts(row);
+            if (special) {
+                Ui.setBold(txtName, true);
+                txtRole.setBackgroundResource(game.isMrWhite[i] ? R.drawable.bg_tag_bone
+                        : game.isUndercoverMode() ? R.drawable.bg_tag_amber_solid : R.drawable.bg_tag_red);
+                txtRole.setTextColor(Ui.color(this, game.isMrWhite[i] || game.isUndercoverMode()
+                        ? R.color.ink : R.color.primary));
+                txtRole.setPadding(Ui.dp(this, 10), Ui.dp(this, 4), Ui.dp(this, 10), Ui.dp(this, 4));
+            } else {
+                txtRole.setTextColor(Ui.color(this, R.color.good));
+            }
+            rolesContainer.addView(row);
+        }
+        endPanel.scrollTo(0, 0);
     }
 
     private void playAgain() {

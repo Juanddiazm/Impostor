@@ -4,8 +4,8 @@ Juego de fiesta para Android: todos los jugadores reciben la misma palabra secre
 impostor, que tiene que fingir que la conoce. Incluye también el modo **Undercover**. Se juega con
 un solo teléfono que se va pasando.
 
-**APK listo para instalar:** [`release/impostor-v1.1.apk`](release/impostor-v1.1.apk)
-(Android 5.0 o superior, ~100 KB, sin permisos ni internet).
+**APK listo para instalar:** [`release/impostor-v1.2.apk`](release/impostor-v1.2.apk)
+(Android 5.0 o superior, ~210 KB, sin permisos ni internet).
 
 ## Cómo se juega
 
@@ -13,8 +13,8 @@ un solo teléfono que se va pasando.
    sus nombres, cuántos impostores hay,
    qué categorías de palabras usar, si el impostor recibe la categoría como pista y un
    temporizador opcional por ronda.
-2. Cada jugador toma el teléfono, pulsa **Ver mi rol**, lo lee en privado y pulsa
-   **Ocultar y pasar**.
+2. Cada jugador toma el teléfono, **mantiene pulsado** el botón para ver su rol en privado,
+   lo suelta para ocultarlo y pulsa **Listo, pasar al siguiente**.
 3. Por turnos (la app indica quién empieza) cada uno dice una pista relacionada con la palabra.
 4. Al final de la ronda se vota y se elimina a un sospechoso:
    - Si era el impostor, tiene una última oportunidad de adivinar la palabra. Si acierta, ganan
@@ -43,6 +43,25 @@ cuál es la de los civiles). Respeta las categorías elegidas y no usa parejas c
 hayas ocultado. En las categorías creadas por ti se forman parejas al azar con sus palabras (hace
 falta que tengan al menos dos).
 
+## Diseño
+
+La versión 1.2 trae un rediseño completo (el lienzo con todas las pantallas se hizo en Claude Design):
+
+- **Icono:** un antifaz color hueso sobre bermellón, con un ojo abierto y otro entrecerrado.
+- **Colores:** fondo tinta `#0E0F15`, bermellón `#FF5A47` para acciones e impostor, ámbar `#FFC247`
+  para Undercover y Mr. White, menta `#7CD9AE` para civiles y victorias, texto hueso `#F4F1EA`.
+- **Tipografías:** Unbounded para títulos y palabras, DM Sans para el resto (ambas con licencia SIL
+  OFL, incluidas en `app/src/main/assets/fonts/` junto a sus licencias, reducidas a caracteres latinos).
+- **Inicio:** los dos modos son tarjetas grandes que llevan directo a la configuración.
+- **Configuración:** selector de modo segmentado, nombres numerados, barra que muestra el reparto de
+  roles (civiles / infiltrados / Mr. White) y categorías como chips que se activan con un toque.
+- **Reparto:** el rol solo se ve mientras se mantiene pulsado el botón; al soltar se oculta. El
+  botón para pasar al siguiente se activa después de haber visto el rol.
+- **Ronda:** fichas de jugadores; se toca al más votado para eliminarlo (con confirmación). Los
+  eliminados quedan tachados con su rol.
+- **Resultado:** banner del equipo ganador, las palabras y el rol de cada jugador.
+- **Palabras:** categorías en pestañas deslizables y palabras como chips; las tuyas en ámbar.
+
 ## Agregar tus propias palabras
 
 En el menú principal entra en **Palabras**:
@@ -67,6 +86,9 @@ app/src/main/java/com/impostor/juego/
     WordsActivity.java    Gestión de palabras y categorías
     WordRepository.java   Palabras y parejas Undercover incluidas + palabras del usuario
     GameState.java        Estado de la partida (modos Impostor y Undercover)
+    Ui.java               Tipografías y utilidades de vista
+    FlowLayout.java       Contenedor de chips que salta de línea
+app/src/main/assets/fonts Unbounded y DM Sans (SIL OFL)
 app/src/main/res/         Layouts, estilos, colores e iconos
 scripts/                  Build sin Android Studio (ver abajo)
 keystore/impostor.jks     Clave de firma (alias `impostor`, contraseña `impostor123`)
@@ -101,7 +123,7 @@ herramientas sueltas en la carpeta `tools/`:
 | `json.jar`          | Solo para `scripts/run-tests.sh`: Maven Central, `org.json:json:20240303`  |
 
 ```
-scripts/build-apk.sh release/impostor-v1.1.apk
+scripts/build-apk.sh release/impostor-v1.2.apk
 ```
 
 Para firmar se usa `keystore/impostor.jks`. El paso de firma v1 de apksig 2.3.0 necesita un JDK

@@ -14,10 +14,16 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.btnPlay).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btnModeImpostor).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SetupActivity.class));
+                startSetup(GameState.MODE_IMPOSTOR);
+            }
+        });
+        findViewById(R.id.btnModeUndercover).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startSetup(GameState.MODE_UNDERCOVER);
             }
         });
         findViewById(R.id.btnWords).setOnClickListener(new View.OnClickListener() {
@@ -32,6 +38,13 @@ public class MainActivity extends Activity {
                 showHowToPlay();
             }
         });
+        Ui.applyFonts(findViewById(android.R.id.content));
+    }
+
+    private void startSetup(int mode) {
+        Intent i = new Intent(this, SetupActivity.class);
+        i.putExtra(SetupActivity.EXTRA_MODE, mode);
+        startActivity(i);
     }
 
     @Override
@@ -39,8 +52,8 @@ public class MainActivity extends Activity {
         super.onResume();
         WordRepository repo = new WordRepository(this);
         TextView count = findViewById(R.id.txtWordCount);
-        count.setText(repo.countAllWords() + " palabras en " + repo.getCategories().size()
-                + " categorías · " + repo.countCustomWords() + " agregadas por ti");
+        count.setText(repo.countAllWords() + " palabras · " + WordRepository.countBuiltInPairs()
+                + " parejas · " + repo.countCustomWords() + " tuyas");
     }
 
     private void showHowToPlay() {

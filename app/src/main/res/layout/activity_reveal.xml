@@ -1,122 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:orientation="vertical"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingTop="24dp"
+    android:paddingBottom="20dp">
 
-    <!-- Pass screen -->
     <LinearLayout
-        android:id="@+id/passPanel"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center">
-
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/txtHeader"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/dealing_roles"
+            style="@style/Muted" />
         <TextView
             android:id="@+id/txtProgress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/muted"
-            android:textSize="14sp"
-            android:letterSpacing="0.1" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pass_phone"
-            android:textColor="@color/muted"
-            android:textSize="18sp"
-            android:layout_marginTop="30dp" />
-
-        <TextView
-            android:id="@+id/txtPlayerName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Title"
-            android:textSize="38sp"
-            android:gravity="center"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="40dp" />
-
-        <Button
-            android:id="@+id/btnReveal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/reveal_role"
-            style="@style/ButtonPrimary" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Asegúrate de que nadie más mire la pantalla"
-            android:textColor="@color/muted"
-            android:textSize="13sp"
-            android:layout_marginTop="14dp" />
+            style="@style/Muted" />
     </LinearLayout>
 
-    <!-- Role card -->
     <LinearLayout
-        android:id="@+id/rolePanel"
+        android:id="@+id/progressBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:visibility="gone">
+        android:layout_height="6dp"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal" />
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Pasar el teléfono -->
         <LinearLayout
-            android:id="@+id/roleCard"
+            android:id="@+id/passPanel"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="28dp"
-            android:background="@drawable/bg_card_civil">
-
+            android:gravity="center">
             <TextView
-                android:id="@+id/txtRoleTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/muted"
-                android:textSize="16sp"
-                android:letterSpacing="0.1" />
-
+                android:text="@string/pass_phone"
+                style="@style/Muted"
+                android:textSize="17sp" />
             <TextView
-                android:id="@+id/txtWord"
+                android:id="@+id/txtPlayerName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center"
                 style="@style/Title"
-                android:textSize="34sp"
-                android:gravity="center"
-                android:layout_marginTop="12dp" />
-
+                android:textSize="48sp" />
             <TextView
-                android:id="@+id/txtCategory"
+                android:id="@+id/txtPassHint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_chip"
-                android:paddingLeft="14dp"
-                android:paddingRight="14dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:textSize="13sp"
-                android:layout_marginTop="14dp" />
-
-            <TextView
-                android:id="@+id/txtRoleDesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
                 android:gravity="center"
-                android:textColor="@color/muted"
-                android:textSize="14sp"
-                android:layout_marginTop="20dp" />
+                android:text="@string/nobody_else"
+                style="@style/Muted"
+                android:textSize="15sp" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btnHide"
+        <!-- Rol (solo visible mientras se mantiene pulsado) -->
+        <LinearLayout
+            android:id="@+id/rolePanel"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+            <LinearLayout
+                android:id="@+id/roleCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:paddingTop="32dp"
+                android:paddingBottom="32dp"
+                android:background="@drawable/bg_card_word">
+                <ImageView
+                    android:id="@+id/imgRole"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_marginBottom="12dp"
+                    android:importantForAccessibility="no"
+                    android:visibility="gone" />
+                <TextView
+                    android:id="@+id/txtRoleTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.14"
+                    android:textAllCaps="true" />
+                <TextView
+                    android:id="@+id/txtWord"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center"
+                    style="@style/Title"
+                    android:textSize="40sp" />
+                <TextView
+                    android:id="@+id/txtCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:paddingLeft="14dp"
+                    android:paddingRight="14dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/txtRoleDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:textSize="15sp"
+                    android:lineSpacingMultiplier="1.15" />
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/btnHold"
+        android:layout_width="168dp"
+        android:layout_height="168dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/bg_hold"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/hold_to_reveal">
+        <ImageView
+            android:id="@+id/imgHold"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_hand"
+            android:importantForAccessibility="no" />
+        <TextView
+            android:id="@+id/txtHold"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="@string/hide_and_pass"
-            style="@style/ButtonPrimary" />
+            android:layout_marginTop="8dp"
+            android:text="@string/hold_short"
+            android:textColor="@color/ink"
+            android:textSize="15sp"
+            android:textStyle="bold" />
     </LinearLayout>
-</FrameLayout>
+
+    <TextView
+        android:id="@+id/txtHoldHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:gravity="center"
+        android:text="@string/hold_hint"
+        style="@style/Muted" />
+
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/next_player"
+        android:enabled="false"
+        style="@style/ButtonSecondary" />
+</LinearLayout>

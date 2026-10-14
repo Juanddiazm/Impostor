@@ -1,62 +1,213 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="28dp">
+    android:fillViewport="true">
 
-    <ImageView
-        android:layout_width="140dp"
-        android:layout_height="140dp"
-        android:src="@drawable/ic_launcher_foreground"
-        android:contentDescription="@string/app_name" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="IMPOSTOR"
-        style="@style/Title"
-        android:textSize="40sp"
-        android:layout_marginTop="4dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tagline"
-        android:textColor="@color/muted"
-        android:textSize="16sp"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="40dp" />
-
-    <Button
-        android:id="@+id/btnPlay"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/play"
-        style="@style/ButtonPrimary" />
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="28dp"
+        android:paddingBottom="24dp">
 
-    <Button
-        android:id="@+id/btnWords"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="@string/words"
-        style="@style/ButtonSecondary" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_logo"
+                android:importantForAccessibility="no" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:text="@string/app_name"
+                style="@style/Display"
+                android:textSize="20sp" />
+        </LinearLayout>
 
-    <Button
-        android:id="@+id/btnHowTo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="@string/how_to_play"
-        style="@style/ButtonSecondary" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:text="@string/home_title"
+            style="@style/Title" />
 
-    <TextView
-        android:id="@+id/txtWordCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/muted"
-        android:textSize="13sp"
-        android:layout_marginTop="28dp" />
-</LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/home_subtitle"
+            style="@style/Muted"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/btnModeImpostor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:orientation="vertical"
+            android:background="@drawable/bg_mode_impostor"
+            android:padding="20dp"
+            android:clickable="true"
+            android:focusable="true">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mode_impostor"
+                    style="@style/Display"
+                    android:textColor="@color/ink" />
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_arrow_right"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/mode_impostor_desc"
+                android:textColor="@color/ink"
+                android:textSize="15sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/mode_impostor_meta"
+                android:textColor="@color/ink"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnModeUndercover"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:background="@drawable/bg_mode_undercover"
+            android:padding="20dp"
+            android:clickable="true"
+            android:focusable="true">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mode_undercover"
+                    style="@style/Display"
+                    android:textColor="@color/ink" />
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_arrow_right"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/mode_undercover_short"
+                android:textColor="@color/ink"
+                android:textSize="15sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/mode_undercover_meta"
+                android:textColor="@color/ink"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:id="@+id/btnWords"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="6dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_tile"
+                android:padding="16dp"
+                android:minHeight="96dp"
+                android:clickable="true"
+                android:focusable="true">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_book"
+                    android:importantForAccessibility="no" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/words"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/btnHowTo"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_tile"
+                android:padding="16dp"
+                android:minHeight="96dp"
+                android:clickable="true"
+                android:focusable="true">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_help"
+                    android:importantForAccessibility="no" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/how_to_play"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:minHeight="24dp" />
+
+        <TextView
+            android:id="@+id/txtWordCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            style="@style/Muted"
+            android:textSize="13sp" />
+    </LinearLayout>
+</ScrollView>

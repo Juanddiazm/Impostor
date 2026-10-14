@@ -55,6 +55,7 @@ sed 's#<manifest #<manifest package="com.impostor.juego" #' "$SRC/AndroidManifes
   -I "$ANDROID_JAR" \
   --manifest "$BUILD/AndroidManifest.xml" \
   -R "$BUILD/res.zip" \
+  -A "$SRC/assets" \
   --java "$BUILD/gen" \
   --auto-add-overlay
 

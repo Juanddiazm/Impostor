@@ -2,23 +2,19 @@ package com.impostor.juego;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,16 +26,15 @@ import java.util.List;
 public class WordsActivity extends Activity {
 
     private WordRepository repo;
-    private Spinner spinner;
+    private LinearLayout categoryTabs;
+    private FlowLayout wordChips;
     private Switch switchEnabled;
     private Button btnDeleteCategory, btnRestore;
     private EditText editWord;
-    private TextView txtCount;
-    private ListView listWords;
+    private TextView txtCount, txtEmpty;
 
     private List<String> categories = new ArrayList<>();
     private String currentCategory;
-    private WordAdapter adapter;
     private boolean updatingSwitch = false;
 
     @Override
@@ -48,29 +43,21 @@ public class WordsActivity extends Activity {
         setContentView(R.layout.activity_words);
         repo = new WordRepository(this);
 
-        spinner = findViewById(R.id.spinnerCategory);
+        categoryTabs = findViewById(R.id.categoryTabs);
+        wordChips = findViewById(R.id.wordChips);
         switchEnabled = findViewById(R.id.switchEnabled);
         btnDeleteCategory = findViewById(R.id.btnDeleteCategory);
         btnRestore = findViewById(R.id.btnRestore);
         editWord = findViewById(R.id.editWord);
         txtCount = findViewById(R.id.txtCount);
-        listWords = findViewById(R.id.listWords);
+        txtEmpty = findViewById(R.id.txtEmpty);
 
-        adapter = new WordAdapter(this);
-        listWords.setAdapter(adapter);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        findViewById(R.id.btnBack).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                currentCategory = categories.get(position);
-                refreshWords();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onClick(View v) {
+                finish();
             }
         });
-
         switchEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -79,7 +66,12 @@ public class WordsActivity extends Activity {
                 }
             }
         });
-
+        findViewById(R.id.rowEnabled).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchEnabled.toggle();
+            }
+        });
         findViewById(R.id.btnAdd).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,38 +109,106 @@ public class WordsActivity extends Activity {
             }
         });
 
+        Ui.applyFonts(findViewById(android.R.id.content));
         refreshCategories(null);
     }
 
     private void refreshCategories(String select) {
         categories = repo.getCategories();
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, categories);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerAdapter);
-        int pos = select == null ? -1 : categories.indexOf(select);
-        if (pos < 0 && currentCategory != null) pos = categories.indexOf(currentCategory);
-        if (pos < 0) pos = 0;
-        spinner.setSelection(pos);
-        currentCategory = categories.get(pos);
+        if (select != null && categories.contains(select)) {
+            currentCategory = select;
+        } else if (currentCategory == null || !categories.contains(currentCategory)) {
+            currentCategory = categories.get(0);
+        }
         refreshWords();
+    }
+
+    private void refreshTabs() {
+        categoryTabs.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View selectedTab = null;
+        for (final String c : categories) {
+            TextView tab = (TextView) inflater.inflate(R.layout.item_chip, categoryTabs, false);
+            boolean selected = c.equals(currentCategory);
+            tab.setText(c + " · " + repo.getWords(c).size());
+            tab.setBackgroundResource(selected ? R.drawable.bg_chip_on : R.drawable.bg_chip);
+            tab.setTextColor(Ui.color(this, selected ? R.color.ink : R.color.text));
+            tab.setSelected(selected);
+            Ui.applyFonts(tab);
+            Ui.setBold(tab, selected);
+            tab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    currentCategory = c;
+                    refreshWords();
+                }
+            });
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) tab.getLayoutParams();
+            if (categoryTabs.getChildCount() > 0) lp.leftMargin = Ui.dp(this, 8);
+            categoryTabs.addView(tab, lp);
+            if (selected) selectedTab = tab;
+        }
+        if (selectedTab != null) {
+            final View target = selectedTab;
+            final HorizontalScrollView scroller = (HorizontalScrollView) categoryTabs.getParent();
+            scroller.post(new Runnable() {
+                @Override
+                public void run() {
+                    int left = target.getLeft() - Ui.dp(WordsActivity.this, 20);
+                    int right = target.getRight() + Ui.dp(WordsActivity.this, 20) - scroller.getWidth();
+                    if (scroller.getScrollX() > left) scroller.smoothScrollTo(left, 0);
+                    else if (scroller.getScrollX() < right) scroller.smoothScrollTo(right, 0);
+                }
+            });
+        }
     }
 
     private void refreshWords() {
         if (currentCategory == null) return;
+        refreshTabs();
         updatingSwitch = true;
         switchEnabled.setChecked(repo.isCategoryEnabled(currentCategory));
         updatingSwitch = false;
         boolean builtIn = repo.isBuiltInCategory(currentCategory);
         btnDeleteCategory.setVisibility(builtIn ? View.GONE : View.VISIBLE);
-        btnRestore.setVisibility(builtIn && repo.countHidden(currentCategory) > 0 ? View.VISIBLE : View.GONE);
+        int hidden = repo.countHidden(currentCategory);
+        btnRestore.setVisibility(builtIn && hidden > 0 ? View.VISIBLE : View.GONE);
+        btnRestore.setText(hidden == 1 ? "Restaurar 1 palabra oculta" : "Restaurar " + hidden + " palabras ocultas");
 
         List<String> words = repo.getWords(currentCategory);
-        adapter.clear();
-        adapter.addAll(words);
-        adapter.notifyDataSetChanged();
-        txtCount.setText(words.size() + (words.size() == 1 ? " palabra" : " palabras")
-                + (builtIn ? " · las originales se pueden ocultar" : " · categoría creada por ti"));
+        String count = words.size() + (words.size() == 1 ? " palabra" : " palabras");
+        if (builtIn) {
+            count += " · " + repo.countPairs(currentCategory) + " parejas Undercover";
+        } else {
+            count += words.size() >= 2 ? " · parejas al azar en Undercover" : " · categoría tuya";
+        }
+        txtCount.setText(count);
+        txtEmpty.setVisibility(words.isEmpty() ? View.VISIBLE : View.GONE);
+
+        wordChips.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (final String word : words) {
+            View chip = inflater.inflate(R.layout.item_word_chip, wordChips, false);
+            boolean custom = !repo.isBuiltInWord(currentCategory, word);
+            TextView txt = chip.findViewById(R.id.txtWord);
+            txt.setText(word);
+            ImageButton del = chip.findViewById(R.id.btnDelete);
+            del.setContentDescription((custom ? "Eliminar " : "Ocultar ") + word);
+            if (custom) {
+                chip.setBackgroundResource(R.drawable.bg_chip_custom);
+                txt.setTextColor(Ui.color(this, R.color.amber));
+                txt.setTypeface(txt.getTypeface(), android.graphics.Typeface.BOLD);
+                del.setImageResource(R.drawable.ic_close_amber);
+            }
+            del.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    confirmDeleteWord(word);
+                }
+            });
+            wordChips.addView(chip);
+        }
+        Ui.applyFonts(wordChips);
     }
 
     private void addWords() {
@@ -163,7 +223,6 @@ public class WordsActivity extends Activity {
                     Toast.LENGTH_SHORT).show();
         }
         refreshWords();
-        listWords.smoothScrollToPosition(adapter.getCount() - 1);
     }
 
     private void newCategoryDialog() {
@@ -171,7 +230,12 @@ public class WordsActivity extends Activity {
         input.setHint("Nombre de la categoría");
         input.setSingleLine(true);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        int pad = (int) (20 * getResources().getDisplayMetrics().density);
+        input.setBackgroundResource(R.drawable.bg_input);
+        input.setTextColor(Ui.color(this, R.color.text));
+        input.setMinHeight(Ui.dp(this, 52));
+        input.setPadding(Ui.dp(this, 14), 0, Ui.dp(this, 14), 0);
+        Ui.applyFonts(input);
+        int pad = Ui.dp(this, 20);
         LinearLayout wrapper = new LinearLayout(this);
         wrapper.setPadding(pad, pad / 2, pad, 0);
         wrapper.addView(input, new LinearLayout.LayoutParams(
@@ -228,28 +292,5 @@ public class WordsActivity extends Activity {
                 })
                 .setNegativeButton("Cancelar", null)
                 .show();
-    }
-
-    private class WordAdapter extends ArrayAdapter<String> {
-        WordAdapter(Context context) {
-            super(context, R.layout.item_word, new ArrayList<String>());
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View row = convertView != null ? convertView
-                    : LayoutInflater.from(getContext()).inflate(R.layout.item_word, parent, false);
-            final String word = getItem(position);
-            ((TextView) row.findViewById(R.id.txtWord)).setText(word);
-            TextView tag = row.findViewById(R.id.txtTag);
-            tag.setText(repo.isBuiltInWord(currentCategory, word) ? "" : "tuya");
-            row.findViewById(R.id.btnDelete).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    confirmDeleteWord(word);
-                }
-            });
-            return row;
-        }
     }
 }

@@ -7,15 +7,53 @@ import zlib
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else "app/src/main/res"
 SIZES = {"mdpi": 48, "hdpi": 72, "xhdpi": 96, "xxhdpi": 144, "xxxhdpi": 192}
-BG = (0x0B, 0x10, 0x20)
-HOOD = (0xFF, 0x4D, 0x6D)
-FACE = BG
-EYE = (0xF5, 0xF5, 0xF7)
-SS = 3  # supersampling
+BG = (0xFF, 0x5A, 0x47)    # bermellón
+MASK = (0xF4, 0xF1, 0xEA)  # hueso
+EYE = (0x0E, 0x0F, 0x15)   # tinta
+SS = 4  # supersampling
+
+# Antifaz en el mismo viewport 108x108 que drawable/ic_launcher_foreground.xml:
+# curvas cúbicas (inicio, control 1, control 2, fin) aplanadas a un polígono.
+MASK_CURVES = [
+    ((24, 46), (24, 40), (30, 38), (38, 39)),
+    ((38, 39), (45, 40), (50, 42), (54, 44)),
+    ((54, 44), (58, 42), (63, 40), (70, 39)),
+    ((70, 39), (78, 38), (84, 40), (84, 46)),
+    ((84, 46), (84, 58), (78, 68), (68, 68)),
+    ((68, 68), (61, 68), (57, 63), (54, 59)),
+    ((54, 59), (51, 63), (47, 68), (40, 68)),
+    ((40, 68), (30, 68), (24, 58), (24, 46)),
+]
 
 
-def in_circle(x, y, cx, cy, r):
-    return (x - cx) ** 2 + (y - cy) ** 2 <= r * r
+def flatten(curves, steps=24):
+    pts = []
+    for p0, p1, p2, p3 in curves:
+        for i in range(steps):
+            t = i / steps
+            mt = 1 - t
+            pts.append((mt ** 3 * p0[0] + 3 * mt * mt * t * p1[0] + 3 * mt * t * t * p2[0] + t ** 3 * p3[0],
+                        mt ** 3 * p0[1] + 3 * mt * mt * t * p1[1] + 3 * mt * t * t * p2[1] + t ** 3 * p3[1]))
+    return pts
+
+
+MASK_POLY = flatten(MASK_CURVES)
+
+
+def in_poly(x, y, poly):
+    inside = False
+    j = len(poly) - 1
+    for i in range(len(poly)):
+        xi, yi = poly[i]
+        xj, yj = poly[j]
+        if (yi > y) != (yj > y) and x < (xj - xi) * (y - yi) / (yj - yi) + xi:
+            inside = not inside
+        j = i
+    return inside
+
+
+def in_ellipse(x, y, cx, cy, rx, ry):
+    return ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1
 
 
 def in_rrect(x, y, x0, y0, x1, y1, r):
@@ -26,32 +64,15 @@ def in_rrect(x, y, x0, y0, x1, y1, r):
     return (x - cx) ** 2 + (y - cy) ** 2 <= r * r
 
 
-def in_tri(x, y, a, b, c):
-    def s(p, q):
-        return (x - q[0]) * (p[1] - q[1]) - (p[0] - q[0]) * (y - q[1])
-    d1, d2, d3 = s(a, b), s(b, c), s(c, a)
-    neg = d1 < 0 or d2 < 0 or d3 < 0
-    pos = d1 > 0 or d2 > 0 or d3 > 0
-    return not (neg and pos)
-
-
 def color_at(u, v):
     """u, v en coordenadas 0..108 (mismo viewport que el vector)."""
-    # Fondo: cuadrado redondeado que ocupa todo el icono
-    if not in_rrect(u, v, 0, 0, 108, 108, 20):
+    if not in_rrect(u, v, 0, 0, 108, 108, 24):
         return None
-    col = BG
-    # Capucha
-    if in_circle(u, v, 54, 48, 26) or in_rrect(u, v, 28, 48, 80, 80, 6):
-        col = HOOD
-        # Abertura de la cara
-        if in_circle(u, v, 54, 52, 16) or in_rrect(u, v, 38, 52, 70, 70, 3):
-            col = FACE
-            if in_tri(u, v, (42, 52), (50, 56), (42, 59)) or in_tri(u, v, (66, 52), (58, 56), (66, 59)):
-                col = EYE
-    if in_rrect(u, v, 52, 84, 56, 88, 0.5):
-        col = EYE
-    return col
+    if in_ellipse(u, v, 40, 52, 7, 5) or in_ellipse(u, v, 68, 53, 7.5, 2.6):
+        return EYE
+    if in_poly(u, v, MASK_POLY):
+        return MASK
+    return BG
 
 
 def render(size):

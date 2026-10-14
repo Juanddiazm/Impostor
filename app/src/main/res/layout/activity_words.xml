@@ -3,110 +3,161 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="20dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/words"
-        style="@style/Title"
-        android:textSize="26sp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Agrega tus propias palabras o crea categorías nuevas."
-        android:textColor="@color/muted"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="14dp" />
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
-        <Spinner
-            android:id="@+id/spinnerCategory"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_input"
-            android:paddingLeft="8dp" />
-        <Button
-            android:id="@+id/btnNewCategory"
-            style="@style/ButtonSmall"
-            android:layout_marginLeft="10dp"
-            android:text="+ Categoría" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="10dp">
-        <Switch
-            android:id="@+id/switchEnabled"
+        <ImageButton
+            android:id="@+id/btnBack"
+            style="@style/IconButton"
+            android:src="@drawable/ic_back"
+            android:contentDescription="@string/back" />
+        <TextView
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="@string/use_in_game"
-            android:textSize="14sp" />
+            android:layout_marginLeft="14dp"
+            android:text="@string/words"
+            style="@style/ScreenTitle" />
         <Button
-            android:id="@+id/btnDeleteCategory"
+            android:id="@+id/btnNewCategory"
             style="@style/ButtonSmall"
-            android:layout_marginLeft="10dp"
-            android:text="Eliminar" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_plus"
+            android:drawablePadding="6dp"
+            android:text="@string/category" />
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:scrollbars="none"
+        android:clipToPadding="false"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
+        <LinearLayout
+            android:id="@+id/categoryTabs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:id="@+id/rowEnabled"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_card"
+        android:paddingLeft="16dp"
+        android:paddingRight="12dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/use_in_game"
+                style="@style/Body" />
+            <TextView
+                android:id="@+id/txtCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                style="@style/Muted"
+                android:textSize="13sp" />
+        </LinearLayout>
+        <Switch
+            android:id="@+id/switchEnabled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/use_in_game" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="12dp">
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
         <EditText
             android:id="@+id/editWord"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:hint="@string/new_word_hint"
             android:imeOptions="actionDone"
             style="@style/Input" />
-        <Button
+        <ImageButton
             android:id="@+id/btnAdd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="@string/add_word"
-            style="@style/ButtonPrimary"
-            android:paddingLeft="18dp"
-            android:paddingRight="18dp" />
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginLeft="8dp"
+            android:background="@drawable/bg_button_primary"
+            android:src="@drawable/ic_plus_ink"
+            android:contentDescription="@string/add_word" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/txtCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/muted"
-        android:textSize="13sp"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="6dp" />
-
-    <ListView
-        android:id="@+id/listWords"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:divider="@null"
-        android:dividerHeight="0dp" />
+        android:layout_marginTop="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp">
+            <com.impostor.juego.FlowLayout
+                android:id="@+id/wordChips"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/txtEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/empty_category"
+                style="@style/Muted"
+                android:visibility="gone" />
+            <Button
+                android:id="@+id/btnDeleteCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:drawableLeft="@drawable/ic_trash"
+                android:drawablePadding="8dp"
+                android:text="@string/delete_category"
+                android:textColor="@color/primary"
+                style="@style/ButtonText" />
+        </LinearLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/btnRestore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="12dp"
         android:text="@string/restore_defaults"
-        style="@style/ButtonSecondary" />
+        style="@style/ButtonSecondary"
+        android:textColor="@color/muted" />
 </LinearLayout>

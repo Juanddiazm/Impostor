@@ -18,73 +18,134 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:id="@+id/txtRound"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/Title"
-                    android:textSize="26sp" />
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="24dp"
+                android:paddingBottom="12dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:layout_marginTop="16dp"
-                    style="@style/Card">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
                     <TextView
+                        android:id="@+id/txtRound"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        style="@style/Display"
+                        android:textSize="28sp" />
+                    <TextView
+                        android:id="@+id/txtModeTag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/starts"
-                        android:textColor="@color/muted"
-                        android:textSize="14sp"
-                        android:letterSpacing="0.1" />
-                    <TextView
-                        android:id="@+id/txtStarter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        style="@style/Title"
-                        android:textSize="28sp"
-                        android:layout_marginTop="4dp" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cada jugador dice una pista relacionada con la palabra, en orden."
-                        android:gravity="center"
-                        android:textColor="@color/muted"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp"
                         android:textSize="13sp"
-                        android:layout_marginTop="8dp" />
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/timerCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    style="@style/Card">
-                    <TextView
-                        android:id="@+id/txtTimer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="46sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/secondary"
-                        android:fontFamily="monospace" />
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="8dp">
-                        <Button android:id="@+id/btnTimerToggle" style="@style/ButtonSmall" android:text="@string/timer_start" />
-                        <Button android:id="@+id/btnTimerReset" style="@style/ButtonSmall" android:layout_marginLeft="10dp" android:text="@string/timer_reset" />
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        style="@style/Card">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/starts"
+                            style="@style/Muted"
+                            android:textSize="13sp" />
+                        <TextView
+                            android:id="@+id/txtStarter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            style="@style/Display" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="@string/starts_hint"
+                            style="@style/Muted"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/timerCard"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="12dp"
+                        android:orientation="vertical"
+                        style="@style/Card">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/time"
+                            style="@style/Muted"
+                            android:textSize="13sp" />
+                        <TextView
+                            android:id="@+id/txtTimer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            style="@style/Display"
+                            android:textColor="@color/amber" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal">
+                            <ImageButton
+                                android:id="@+id/btnTimerToggle"
+                                android:layout_width="48dp"
+                                android:layout_height="44dp"
+                                android:background="@drawable/bg_stepper"
+                                android:src="@drawable/ic_play"
+                                android:contentDescription="@string/timer_start" />
+                            <ImageButton
+                                android:id="@+id/btnTimerReset"
+                                android:layout_width="48dp"
+                                android:layout_height="44dp"
+                                android:layout_marginLeft="8dp"
+                                android:background="@drawable/bg_stepper"
+                                android:src="@drawable/ic_reset"
+                                android:contentDescription="@string/timer_reset" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="@string/alive_players" style="@style/SectionTitle" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:id="@+id/txtVoteTitle"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        style="@style/SectionTitle" />
+                    <TextView
+                        android:id="@+id/txtAlive"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/Muted"
+                        android:textSize="13sp" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/playersContainer"
@@ -94,102 +155,167 @@
             </LinearLayout>
         </ScrollView>
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
-            <Button
-                android:id="@+id/btnVote"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/vote"
-                style="@style/ButtonPrimary" />
-            <Button
-                android:id="@+id/btnEnd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/end_game"
-                style="@style/ButtonSecondary" />
-        </LinearLayout>
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/vote_hint"
+            style="@style/Muted" />
+
+        <Button
+            android:id="@+id/btnEnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"
+            android:text="@string/end_game"
+            style="@style/ButtonText" />
     </LinearLayout>
 
-    <!-- Resultado final -->
-    <LinearLayout
+    <ScrollView
         android:id="@+id/endPanel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="24dp"
+        android:fillViewport="true"
         android:visibility="gone">
-
-        <TextView
-            android:id="@+id/txtEndTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Title"
-            android:gravity="center"
-            android:textSize="32sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center"
-            android:layout_marginTop="24dp"
-            android:padding="24dp"
-            android:background="@drawable/bg_card">
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="20dp">
+
+            <LinearLayout
+                android:id="@+id/endBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_win_good"
+                android:paddingLeft="22dp"
+                android:paddingRight="22dp"
+                android:paddingTop="28dp"
+                android:paddingBottom="28dp">
+                <TextView
+                    android:id="@+id/txtEndKicker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.14"
+                    android:textAllCaps="true" />
+                <TextView
+                    android:id="@+id/txtEndTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    style="@style/Display"
+                    android:textSize="32sp" />
+                <TextView
+                    android:id="@+id/txtEndDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:baselineAligned="false">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    style="@style/Card">
+                    <TextView
+                        android:id="@+id/txtEndWordLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/Muted"
+                        android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/txtEndWord"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        style="@style/Display" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/endUndercoverCard"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical"
+                    style="@style/Card">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/mode_undercover"
+                        style="@style/Muted"
+                        android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/txtEndUndercoverWord"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        style="@style/Display"
+                        android:textColor="@color/amber" />
+                </LinearLayout>
+            </LinearLayout>
+
             <TextView
-                android:id="@+id/txtEndWordLabel"
+                android:id="@+id/txtEndCategory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="La palabra era"
-                android:textColor="@color/muted"
-                android:textSize="14sp"
-                android:letterSpacing="0.1" />
-            <TextView
-                android:id="@+id/txtEndWord"
-                android:layout_width="wrap_content"
+                android:layout_marginTop="10dp"
+                style="@style/Muted"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:id="@+id/rolesContainer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Title"
-                android:gravity="center"
-                android:textSize="30sp"
-                android:layout_marginTop="6dp" />
-            <TextView
-                android:id="@+id/txtEndImpostors"
-                android:layout_width="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="20dp" />
+
+            <Button
+                android:id="@+id/btnPlayAgain"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/primary"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginTop="18dp" />
-            <TextView
-                android:id="@+id/txtEndDetail"
-                android:layout_width="wrap_content"
+                android:text="@string/play_again"
+                style="@style/ButtonPrimary" />
+
+            <Button
+                android:id="@+id/btnMenu"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/muted"
-                android:textSize="14sp"
-                android:gravity="center"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="10dp"
+                android:text="@string/back_to_menu"
+                style="@style/ButtonSecondary" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btnPlayAgain"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="@string/play_again"
-            style="@style/ButtonPrimary" />
-
-        <Button
-            android:id="@+id/btnMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/back_to_menu"
-            style="@style/ButtonSecondary" />
-    </LinearLayout>
+    </ScrollView>
 </FrameLayout>

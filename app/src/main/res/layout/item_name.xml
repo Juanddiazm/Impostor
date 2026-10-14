@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+    <TextView
+        android:id="@+id/txtNumber"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:gravity="center"
+        android:background="@drawable/bg_avatar"
+        android:textColor="@color/text"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/editName"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="48dp"
+        android:layout_marginLeft="12dp"
+        android:background="@drawable/bg_input_plain"
+        android:singleLine="true"
+        android:inputType="textPersonName|textCapWords"
+        android:imeOptions="actionNext"
+        android:textColor="@color/text"
+        android:textColorHint="@color/muted"
+        android:textSize="16sp" />
+</LinearLayout>

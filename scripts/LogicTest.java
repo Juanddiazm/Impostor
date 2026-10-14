@@ -153,7 +153,11 @@ public class LogicTest {
             check(repo3.pickPair(Arrays.asList("Ropa"), rnd).category.equals("Ropa"), "solo Ropa");
         }
         // Las parejas con una palabra oculta no se usan
+        int pairsBefore = repo3.countPairs("Animales");
+        check(pairsBefore > 10, "parejas en Animales: " + pairsBefore);
         repo3.removeWord("Animales", "Perro");
+        check(repo3.countPairs("Animales") == pairsBefore - 1, "countPairs descuenta la pareja oculta");
+        check(repo3.countPairs("No existe") == 0, "countPairs sin categoría");
         for (int k = 0; k < 1000; k++) {
             WordPick p = repo3.pickPair(Arrays.asList("Animales"), rnd);
             check(!p.word.equals("Perro") && !p.undercoverWord.equals("Perro"), "Perro oculto no sale");

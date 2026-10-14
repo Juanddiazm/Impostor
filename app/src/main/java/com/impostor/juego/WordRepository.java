@@ -454,6 +454,19 @@ public class WordRepository {
         return random.nextBoolean() ? pick : new WordPick(pick.category, pick.undercoverWord, pick.word);
     }
 
+    /** Parejas Undercover incluidas que se usan en una categoría original (sin las que tienen palabras ocultas). */
+    public int countPairs(String category) {
+        String[] pairs = BUILT_IN_PAIRS.get(category);
+        if (pairs == null) return 0;
+        JSONArray hiddenArr = hidden.optJSONArray(category);
+        int total = 0;
+        for (String pair : pairs) {
+            String[] parts = pair.split("/");
+            if (!isHidden(hiddenArr, parts[0]) && !isHidden(hiddenArr, parts[1])) total++;
+        }
+        return total;
+    }
+
     /** Número de parejas incluidas para el modo Undercover. */
     public static int countBuiltInPairs() {
         int total = 0;

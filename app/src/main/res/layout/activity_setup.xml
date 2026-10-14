@@ -14,59 +14,112 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    style="@style/IconButton"
+                    android:src="@drawable/ic_back"
+                    android:contentDescription="@string/back" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:text="@string/settings_title"
+                    style="@style/ScreenTitle" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_segment"
+                android:padding="4dp">
+                <TextView
+                    android:id="@+id/btnModeImpostor"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="48dp"
+                    android:gravity="center"
+                    android:text="@string/mode_impostor"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true" />
+                <TextView
+                    android:id="@+id/btnModeUndercover"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="48dp"
+                    android:layout_marginLeft="4dp"
+                    android:gravity="center"
+                    android:text="@string/mode_undercover"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </LinearLayout>
 
             <TextView
+                android:id="@+id/txtModeDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                style="@style/Muted" />
+
+            <!-- Jugadores -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/players"
+                    style="@style/SectionTitle" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_stepper_group"
+                    android:padding="4dp">
+                    <Button android:id="@+id/btnPlayersMinus" style="@style/Stepper" android:text="−" android:contentDescription="Quitar jugador" />
+                    <TextView android:id="@+id/txtPlayers" style="@style/StepperValue" android:layout_width="36dp" android:textSize="18sp" android:textColor="@color/text" android:text="5" />
+                    <Button android:id="@+id/btnPlayersPlus" style="@style/Stepper" android:text="+" android:contentDescription="Agregar jugador" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/namesContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:padding="6dp" />
+
+            <!-- Roles -->
+            <TextView
+                android:id="@+id/txtImpostorsSection"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/settings_title"
-                style="@style/Title"
-                android:textSize="26sp" />
-
-            <!-- Game mode -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/game_mode" style="@style/SectionTitle" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                style="@style/Card">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <Button
-                        android:id="@+id/btnModeImpostor"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="6dp"
-                        android:text="@string/mode_impostor"
-                        style="@style/ButtonSmall" />
-                    <Button
-                        android:id="@+id/btnModeUndercover"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="6dp"
-                        android:text="@string/mode_undercover"
-                        style="@style/ButtonSmall" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/txtModeDesc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:textColor="@color/muted"
-                    android:layout_marginTop="10dp" />
-            </LinearLayout>
-
-            <!-- Players -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/players" style="@style/SectionTitle" />
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/roles"
+                style="@style/SectionTitle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -79,179 +132,201 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:text="Cantidad de jugadores"
-                        android:textSize="16sp" />
-                    <Button android:id="@+id/btnPlayersMinus" style="@style/Stepper" android:text="−" />
-                    <TextView
-                        android:id="@+id/txtPlayers"
-                        android:layout_width="44dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        android:text="5" />
-                    <Button android:id="@+id/btnPlayersPlus" style="@style/Stepper" android:text="+" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/namesContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="10dp" />
-            </LinearLayout>
-
-            <!-- Impostors / infiltrators -->
-            <TextView android:id="@+id/txtImpostorsSection"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/impostors" style="@style/SectionTitle" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                style="@style/Card">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    <View
+                        android:id="@+id/dotImpostor"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginRight="12dp" />
                     <TextView
                         android:id="@+id/txtImpostorsLabel"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="@string/impostor_count"
-                        android:textSize="16sp" />
-                    <Button android:id="@+id/btnImpostorsMinus" style="@style/Stepper" android:text="−" />
-                    <TextView
-                        android:id="@+id/txtImpostors"
-                        android:layout_width="44dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/primary"
-                        android:text="1" />
-                    <Button android:id="@+id/btnImpostorsPlus" style="@style/Stepper" android:text="+" />
+                        style="@style/Body" />
+                    <Button android:id="@+id/btnImpostorsMinus" style="@style/Stepper" android:text="−" android:contentDescription="Menos" />
+                    <TextView android:id="@+id/txtImpostors" style="@style/StepperValue" android:layout_width="32dp" android:textSize="18sp" android:textColor="@color/text" android:text="1" />
+                    <Button android:id="@+id/btnImpostorsPlus" style="@style/Stepper" android:text="+" android:contentDescription="Más" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/rowMrWhite"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="10dp">
+                    android:gravity="center_vertical">
+                    <View
+                        android:id="@+id/dotMrWhite"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginRight="12dp" />
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="@string/mr_white_count"
-                        android:textSize="16sp" />
-                    <Button android:id="@+id/btnMrWhiteMinus" style="@style/Stepper" android:text="−" />
-                    <TextView
-                        android:id="@+id/txtMrWhite"
-                        android:layout_width="44dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/warn"
-                        android:text="0" />
-                    <Button android:id="@+id/btnMrWhitePlus" style="@style/Stepper" android:text="+" />
+                        style="@style/Body" />
+                    <Button android:id="@+id/btnMrWhiteMinus" style="@style/Stepper" android:text="−" android:contentDescription="Menos" />
+                    <TextView android:id="@+id/txtMrWhite" style="@style/StepperValue" android:layout_width="32dp" android:textSize="18sp" android:textColor="@color/text" android:text="0" />
+                    <Button android:id="@+id/btnMrWhitePlus" style="@style/Stepper" android:text="+" android:contentDescription="Más" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/roleBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal" />
+
+                <TextView
+                    android:id="@+id/txtRoleSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    style="@style/Muted" />
 
                 <TextView
                     android:id="@+id/txtInfiltratorsNote"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
                     android:text="@string/infiltrators_note"
-                    android:textSize="13sp"
-                    android:textColor="@color/muted"
-                    android:layout_marginTop="10dp" />
+                    style="@style/Muted"
+                    android:textSize="13sp" />
             </LinearLayout>
 
-            <!-- Categories -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/categories" style="@style/SectionTitle" />
-
+            <!-- Categorías -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                style="@style/Card">
+                android:layout_marginTop="22dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
                 <TextView
-                    android:id="@+id/txtCategories"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:textSize="15sp"
-                    android:textColor="@color/muted"
-                    android:layout_marginBottom="10dp" />
+                    android:text="@string/categories"
+                    style="@style/SectionTitle" />
                 <Button
-                    android:id="@+id/btnCategories"
-                    android:layout_width="match_parent"
+                    android:id="@+id/btnAllCategories"
+                    style="@style/ButtonText"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/choose_categories"
-                    style="@style/ButtonSecondary" />
+                    android:minHeight="44dp"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:text="@string/all" />
             </LinearLayout>
 
-            <!-- Options -->
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Opciones" style="@style/SectionTitle" />
+            <com.impostor.juego.FlowLayout
+                android:id="@+id/categoryChips"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp" />
+
+            <TextView
+                android:id="@+id/txtCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                style="@style/Muted"
+                android:textSize="13sp" />
+
+            <!-- Opciones -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/options"
+                style="@style/SectionTitle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                style="@style/Card">
+                android:background="@drawable/bg_card"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp">
 
-                <Switch
-                    android:id="@+id/switchHint"
+                <LinearLayout
+                    android:id="@+id/rowHint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/hint_for_impostor"
-                    android:textSize="15sp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/txtHintTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/hint_for_impostor"
+                            style="@style/Body" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/hint_desc"
+                            style="@style/Muted"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                    <Switch
+                        android:id="@+id/switchHint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="12dp"
+                        android:contentDescription="@string/hint_for_impostor" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/surface_light" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginTop="10dp">
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp">
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="@string/round_time"
-                        android:textSize="15sp" />
-                    <Button android:id="@+id/btnTimeMinus" style="@style/Stepper" android:text="−" />
-                    <TextView
-                        android:id="@+id/txtTime"
-                        android:layout_width="90dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:text="@string/no_limit" />
-                    <Button android:id="@+id/btnTimePlus" style="@style/Stepper" android:text="+" />
+                        style="@style/Body" />
+                    <Button android:id="@+id/btnTimeMinus" style="@style/Stepper" android:text="−" android:contentDescription="Menos" />
+                    <TextView android:id="@+id/txtTime" style="@style/StepperValue" android:layout_width="84dp" android:textSize="15sp" android:textColor="@color/text" android:text="—" />
+                    <Button android:id="@+id/btnTimePlus" style="@style/Stepper" android:text="+" android:contentDescription="Más" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/surface" />
+
     <Button
         android:id="@+id/btnStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="20dp"
         android:text="@string/start_game"
         style="@style/ButtonPrimary" />
 </LinearLayout>

@@ -1,15 +1,12 @@
 package com.impostor.juego;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -22,6 +19,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class SetupActivity extends Activity {
+
+    /** Extra opcional con el modo elegido en el inicio ({@link GameState#MODE_IMPOSTOR} o UNDERCOVER). */
+    public static final String EXTRA_MODE = "mode";
 
     private static final String PREFS = "impostor_setup";
     private static final int MIN_PLAYERS = 3;
@@ -38,11 +38,12 @@ public class SetupActivity extends Activity {
     private int timerMinutes = 0;
     private final List<String> names = new ArrayList<>();
 
-    private TextView txtPlayers, txtImpostors, txtMrWhite, txtTime, txtCategories;
-    private TextView txtModeDesc, txtImpostorsSection, txtImpostorsLabel;
-    private View rowMrWhite, txtInfiltratorsNote;
-    private Button btnModeImpostor, btnModeUndercover;
-    private LinearLayout namesContainer;
+    private TextView txtPlayers, txtImpostors, txtMrWhite, txtTime, txtCategories, txtRoleSummary;
+    private TextView txtModeDesc, txtImpostorsSection, txtImpostorsLabel, txtHintTitle;
+    private TextView btnModeImpostor, btnModeUndercover;
+    private View rowMrWhite, txtInfiltratorsNote, dotImpostor, dotMrWhite;
+    private LinearLayout namesContainer, roleBar;
+    private FlowLayout categoryChips;
     private Switch switchHint;
 
     @Override
@@ -55,20 +56,26 @@ public class SetupActivity extends Activity {
         txtPlayers = findViewById(R.id.txtPlayers);
         txtImpostors = findViewById(R.id.txtImpostors);
         txtMrWhite = findViewById(R.id.txtMrWhite);
+        txtTime = findViewById(R.id.txtTime);
+        txtCategories = findViewById(R.id.txtCategories);
+        txtRoleSummary = findViewById(R.id.txtRoleSummary);
         txtModeDesc = findViewById(R.id.txtModeDesc);
         txtImpostorsSection = findViewById(R.id.txtImpostorsSection);
         txtImpostorsLabel = findViewById(R.id.txtImpostorsLabel);
-        rowMrWhite = findViewById(R.id.rowMrWhite);
-        txtInfiltratorsNote = findViewById(R.id.txtInfiltratorsNote);
+        txtHintTitle = findViewById(R.id.txtHintTitle);
         btnModeImpostor = findViewById(R.id.btnModeImpostor);
         btnModeUndercover = findViewById(R.id.btnModeUndercover);
-        txtTime = findViewById(R.id.txtTime);
-        txtCategories = findViewById(R.id.txtCategories);
+        rowMrWhite = findViewById(R.id.rowMrWhite);
+        txtInfiltratorsNote = findViewById(R.id.txtInfiltratorsNote);
+        dotImpostor = findViewById(R.id.dotImpostor);
+        dotMrWhite = findViewById(R.id.dotMrWhite);
         namesContainer = findViewById(R.id.namesContainer);
+        roleBar = findViewById(R.id.roleBar);
+        categoryChips = findViewById(R.id.categoryChips);
         switchHint = findViewById(R.id.switchHint);
 
-        // Restaurar la última configuración usada.
-        mode = prefs.getInt("mode", GameState.MODE_IMPOSTOR);
+        // Restaurar la última configuración usada; el modo elegido en el inicio tiene prioridad.
+        mode = getIntent().getIntExtra(EXTRA_MODE, prefs.getInt("mode", GameState.MODE_IMPOSTOR));
         playerCount = prefs.getInt("players", 5);
         impostorCount = prefs.getInt("impostors", 1);
         mrWhiteCount = prefs.getInt("mrwhite", 0);
@@ -78,6 +85,12 @@ public class SetupActivity extends Activity {
             names.add(prefs.getString("name" + i, ""));
         }
 
+        findViewById(R.id.btnBack).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         btnModeImpostor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +101,12 @@ public class SetupActivity extends Activity {
             @Override
             public void onClick(View v) {
                 setMode(GameState.MODE_UNDERCOVER);
+            }
+        });
+        findViewById(R.id.rowHint).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchHint.toggle();
             }
         });
         findViewById(R.id.btnPlayersMinus).setOnClickListener(new View.OnClickListener() {
@@ -144,10 +163,11 @@ public class SetupActivity extends Activity {
                 refreshCounters();
             }
         });
-        findViewById(R.id.btnCategories).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btnAllCategories).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chooseCategories();
+                for (String c : repo.getCategories()) repo.setCategoryEnabled(c, true);
+                refreshCategories();
             }
         });
         findViewById(R.id.btnStart).setOnClickListener(new View.OnClickListener() {
@@ -157,6 +177,7 @@ public class SetupActivity extends Activity {
             }
         });
 
+        Ui.applyFonts(findViewById(android.R.id.content));
         buildNameFields();
         clampCounts();
         refreshMode();
@@ -167,7 +188,7 @@ public class SetupActivity extends Activity {
     protected void onResume() {
         super.onResume();
         repo = new WordRepository(this);
-        refreshCategoriesLabel();
+        refreshCategories();
     }
 
     /** Máximo de jugadores no civiles (impostores, o undercovers + Mr. White). */
@@ -201,21 +222,53 @@ public class SetupActivity extends Activity {
         refreshCounters();
     }
 
-    private void refreshMode() {
-        boolean undercover = mode == GameState.MODE_UNDERCOVER;
-        styleModeButton(btnModeImpostor, !undercover);
-        styleModeButton(btnModeUndercover, undercover);
-        txtModeDesc.setText(undercover ? R.string.mode_undercover_desc : R.string.mode_impostor_desc);
-        txtImpostorsSection.setText(undercover ? R.string.infiltrators : R.string.impostors);
-        txtImpostorsLabel.setText(undercover ? R.string.undercover_count : R.string.impostor_count);
-        rowMrWhite.setVisibility(undercover ? View.VISIBLE : View.GONE);
-        txtInfiltratorsNote.setVisibility(undercover ? View.VISIBLE : View.GONE);
-        switchHint.setText(undercover ? R.string.hint_for_mr_white : R.string.hint_for_impostor);
+    private boolean undercover() {
+        return mode == GameState.MODE_UNDERCOVER;
     }
 
-    private void styleModeButton(Button button, boolean selected) {
-        button.setBackgroundResource(selected ? R.drawable.bg_button_primary : R.drawable.bg_button_secondary);
-        button.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
+    /** Color de los infiltrados en el modo actual: bermellón (impostor) o ámbar (undercover). */
+    private int accent() {
+        return Ui.color(this, undercover() ? R.color.amber : R.color.primary);
+    }
+
+    private void refreshMode() {
+        boolean u = undercover();
+        styleSegment(btnModeImpostor, !u, R.drawable.bg_segment_impostor);
+        styleSegment(btnModeUndercover, u, R.drawable.bg_segment_undercover);
+        txtModeDesc.setText(u ? R.string.mode_undercover_desc : R.string.mode_impostor_desc);
+        txtImpostorsSection.setText(u ? R.string.infiltrators : R.string.impostors);
+        txtImpostorsLabel.setText(u ? R.string.undercover_count : R.string.impostor_count);
+        rowMrWhite.setVisibility(u ? View.VISIBLE : View.GONE);
+        txtInfiltratorsNote.setVisibility(u ? View.VISIBLE : View.GONE);
+        txtHintTitle.setText(u ? R.string.hint_for_mr_white : R.string.hint_for_impostor);
+        switchHint.setContentDescription(txtHintTitle.getText());
+        txtImpostors.setTextColor(accent());
+        dotImpostor.setBackground(dot(accent()));
+        dotMrWhite.setBackground(dot(Ui.color(this, R.color.text)));
+    }
+
+    private void styleSegment(TextView segment, boolean selected, int selectedBg) {
+        if (selected) {
+            segment.setBackgroundResource(selectedBg);
+        } else {
+            segment.setBackground(null);
+        }
+        segment.setTextColor(Ui.color(this, selected ? R.color.ink : R.color.muted));
+        segment.setSelected(selected);
+    }
+
+    private GradientDrawable dot(int color) {
+        GradientDrawable d = new GradientDrawable();
+        d.setShape(GradientDrawable.OVAL);
+        d.setColor(color);
+        return d;
+    }
+
+    private GradientDrawable bar(int color) {
+        GradientDrawable d = new GradientDrawable();
+        d.setCornerRadius(Ui.dp(this, 5));
+        d.setColor(color);
+        return d;
     }
 
     private void refreshCounters() {
@@ -224,88 +277,99 @@ public class SetupActivity extends Activity {
         txtMrWhite.setText(String.valueOf(mrWhiteCount));
         txtTime.setText(timerMinutes == 0 ? getString(R.string.no_limit)
                 : String.format(Locale.getDefault(), "%d min", timerMinutes));
+
+        int whites = mrWhites();
+        int civilians = playerCount - impostorCount - whites;
+        roleBar.removeAllViews();
+        addBarSegment(civilians, Ui.color(this, R.color.good));
+        addBarSegment(impostorCount, accent());
+        addBarSegment(whites, Ui.color(this, R.color.text));
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(civilians).append(civilians == 1 ? " civil · " : " civiles · ");
+        if (undercover()) {
+            sb.append(impostorCount).append(" undercover");
+            if (whites > 0) sb.append(" · ").append(whites).append(" Mr. White");
+        } else {
+            sb.append(impostorCount).append(impostorCount == 1 ? " impostor" : " impostores");
+        }
+        txtRoleSummary.setText(sb.toString());
     }
 
-    private void refreshCategoriesLabel() {
+    private void addBarSegment(int weight, int color) {
+        if (weight <= 0) return;
+        View v = new View(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, weight);
+        if (roleBar.getChildCount() > 0) lp.leftMargin = Ui.dp(this, 4);
+        v.setLayoutParams(lp);
+        v.setBackground(bar(color));
+        roleBar.addView(v);
+    }
+
+    private void refreshCategories() {
+        categoryChips.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (final String c : repo.getCategories()) {
+            final int count = repo.getWords(c).size();
+            TextView chip = (TextView) inflater.inflate(R.layout.item_chip, categoryChips, false);
+            chip.setText(c);
+            boolean on = repo.isCategoryEnabled(c) && count > 0;
+            chip.setBackgroundResource(on ? R.drawable.bg_chip_on : R.drawable.bg_chip);
+            chip.setTextColor(Ui.color(this, on ? R.color.ink : R.color.muted));
+            chip.setSelected(on);
+            Ui.applyFonts(chip);
+            Ui.setBold(chip, on);
+            chip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (count == 0) {
+                        Toast.makeText(SetupActivity.this, "\"" + c + "\" no tiene palabras todavía",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    repo.setCategoryEnabled(c, !repo.isCategoryEnabled(c));
+                    refreshCategories();
+                }
+            });
+            categoryChips.addView(chip);
+        }
         List<String> enabled = repo.getEnabledCategories();
         int total = repo.getCategories().size();
-        if (enabled.isEmpty()) {
-            txtCategories.setText("Ninguna categoría seleccionada");
-        } else if (enabled.size() == total) {
-            txtCategories.setText("Todas las categorías (" + total + ")");
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < enabled.size(); i++) {
-                if (i > 0) sb.append(", ");
-                sb.append(enabled.get(i));
-            }
-            txtCategories.setText(enabled.size() + " de " + total + ": " + sb);
-        }
+        txtCategories.setText(enabled.isEmpty() ? "Elige al menos una categoría"
+                : enabled.size() + " de " + total + " categorías activas");
     }
 
     private void buildNameFields() {
         namesContainer.removeAllViews();
-        int padding = (int) (10 * getResources().getDisplayMetrics().density);
+        LayoutInflater inflater = LayoutInflater.from(this);
         for (int i = 0; i < playerCount; i++) {
-            EditText edit = new EditText(this);
+            View row = inflater.inflate(R.layout.item_name, namesContainer, false);
+            ((TextView) row.findViewById(R.id.txtNumber)).setText(String.valueOf(i + 1));
+            EditText edit = row.findViewById(R.id.editName);
             edit.setHint("Jugador " + (i + 1));
             edit.setText(names.get(i));
-            edit.setSingleLine(true);
-            edit.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-            edit.setBackgroundResource(R.drawable.bg_input);
-            edit.setPadding(padding, padding, padding, padding);
-            edit.setTextColor(getResources().getColor(R.color.text));
-            edit.setHintTextColor(getResources().getColor(R.color.muted));
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lp.topMargin = padding / 2;
-            edit.setLayoutParams(lp);
-            namesContainer.addView(edit);
+            edit.setContentDescription("Nombre del jugador " + (i + 1));
+            if (i > 0) {
+                View divider = new View(this);
+                divider.setBackgroundResource(R.color.surface_light);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, Ui.dp(this, 1));
+                lp.leftMargin = Ui.dp(this, 10);
+                lp.rightMargin = Ui.dp(this, 10);
+                namesContainer.addView(divider, lp);
+            }
+            namesContainer.addView(row);
         }
+        Ui.applyFonts(namesContainer);
     }
 
     private void collectNames() {
+        int player = 0;
         for (int i = 0; i < namesContainer.getChildCount(); i++) {
-            EditText edit = (EditText) namesContainer.getChildAt(i);
-            names.set(i, edit.getText().toString().trim());
+            EditText edit = namesContainer.getChildAt(i).findViewById(R.id.editName);
+            if (edit == null) continue;
+            names.set(player++, edit.getText().toString().trim());
         }
-    }
-
-    private void chooseCategories() {
-        final List<String> all = repo.getCategories();
-        final String[] labels = new String[all.size()];
-        final boolean[] checked = new boolean[all.size()];
-        for (int i = 0; i < all.size(); i++) {
-            String c = all.get(i);
-            labels[i] = c + " (" + repo.getWords(c).size() + ")";
-            checked[i] = repo.isCategoryEnabled(c);
-        }
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.choose_categories)
-                .setMultiChoiceItems(labels, checked, new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                        checked[which] = isChecked;
-                    }
-                })
-                .setPositiveButton("Listo", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        for (int i = 0; i < all.size(); i++) {
-                            repo.setCategoryEnabled(all.get(i), checked[i]);
-                        }
-                        refreshCategoriesLabel();
-                    }
-                })
-                .setNeutralButton("Todas", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        for (String c : all) repo.setCategoryEnabled(c, true);
-                        refreshCategoriesLabel();
-                    }
-                })
-                .setNegativeButton("Cancelar", null)
-                .show();
     }
 
     private void startGame() {
@@ -340,7 +404,7 @@ public class SetupActivity extends Activity {
         GameState game = new GameState(players, mode, impostorCount, mrWhites(),
                 switchHint.isChecked(), timerMinutes, categories);
         if (!game.newRound(repo)) {
-            Toast.makeText(this, mode == GameState.MODE_UNDERCOVER
+            Toast.makeText(this, undercover()
                     ? "No hay parejas de palabras en las categorías elegidas"
                     : "No hay palabras disponibles en las categorías elegidas", Toast.LENGTH_LONG).show();
             return;
